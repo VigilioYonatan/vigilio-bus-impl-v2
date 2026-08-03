@@ -1,0 +1,2 @@
+pnpm exec vigilio-governance validate-branch-name --branch-name "$(git branch --show-current)"
+pnpm prepush:verify

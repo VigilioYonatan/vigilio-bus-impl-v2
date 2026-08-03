@@ -1,0 +1,28 @@
+# CODEOWNERS - bus-impl-v2
+# Keep at least one resolvable owner on every rule. Replace the personal owner
+# with verified organization teams only after those teams have repository access.
+
+* @VigilioYonatan
+
+/.github/ @VigilioYonatan
+/.github/CODEOWNERS @VigilioYonatan
+/.github/SECURITY.md @VigilioYonatan
+/.github/security-exceptions.json @VigilioYonatan
+/AGENTS.md @VigilioYonatan
+/package.json @VigilioYonatan
+/pnpm-lock.yaml @VigilioYonatan
+/pnpm-workspace.yaml @VigilioYonatan
+
+/drizzle/ @VigilioYonatan
+/scripts/ @VigilioYonatan
+
+/src/auth/ @VigilioYonatan
+/src/shared/infrastructure/config/ @VigilioYonatan
+/src/shared/infrastructure/database/ @VigilioYonatan
+/src/shared/infrastructure/security/ @VigilioYonatan
+/src/observability/ @VigilioYonatan
+/src/worker/ @VigilioYonatan
+/src/worker.main.ts @VigilioYonatan
+
+/docs/openapi/ @VigilioYonatan
+/docs/security-vulnerability-management.md @VigilioYonatan

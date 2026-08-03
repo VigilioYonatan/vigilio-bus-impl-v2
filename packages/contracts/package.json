@@ -1,0 +1,49 @@
+{
+  "name": "@vigilioyonatan/bus-v2-contracts",
+  "version": "2026.6.0",
+  "description": "Browser-safe Zod schemas and inferred HTTP contract types owned by bus-impl.",
+  "type": "module",
+  "private": false,
+  "sideEffects": false,
+  "main": "./dist/src/contracts.js",
+  "types": "./dist/src/contracts.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/contracts.d.ts",
+      "import": "./dist/src/contracts.js",
+      "default": "./dist/src/contracts.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "pnpm clean && tsc -p tsconfig.build.json && vigilio-node fix-esm-imports",
+    "dev": "pnpm build && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "zod": "4.4.3"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VigilioYonatan/bus-impl-v2.git",
+    "directory": "packages/contracts"
+  },
+  "license": "UNLICENSED"
+}

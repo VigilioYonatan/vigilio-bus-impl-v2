@@ -1,0 +1,32 @@
+{
+  "compression_level": "aggressive",
+  "strategies": {
+    "typescript": "ast-skeleton",
+    "json": "smart-crush",
+    "logs": "tokenshrink-semantic",
+    "yaml": "smart-crush",
+    "sql": "ast-skeleton"
+  },
+  "ignore": [
+    "node_modules",
+    ".git",
+    "dist",
+    "cdk.out",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    "reports",
+    "*.min.js",
+    "pnpm-lock.yaml",
+    "*.map"
+  ],
+  "priority_files": [
+    "src/**/module.ts",
+    "src/**/controller.ts",
+    "src/**/service.ts",
+    "src/**/schema.ts",
+    "src/contracts.ts",
+    "cdk/**/*.ts"
+  ],
+  "fallback_to_raw_on_error": true
+}

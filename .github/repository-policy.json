@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "required_files": [
+    ".github/CODEOWNERS",
+    ".github/SECURITY.md",
+    ".github/dependabot.yml",
+    ".github/evidence-policy.json",
+    ".github/governance-policy.json",
+    ".github/pull_request_template.md",
+    ".github/security-exceptions.json",
+    ".github/workflows/ci.yml",
+    ".github/workflows/dora-metrics.yml",
+    ".github/workflows/governance-audit.yml",
+    ".github/workflows/security-nightly.yml",
+    "docs/security-vulnerability-management.md"
+  ],
+  "content_rules": [
+    {
+      "file": ".github/CODEOWNERS",
+      "includes": [
+        "* @VigilioYonatan",
+        "/.github/",
+        "/drizzle/",
+        "/scripts/",
+        "/src/auth/",
+        "/src/shared/infrastructure/database/",
+        "/src/shared/infrastructure/security/"
+      ],
+      "excludes": ["Ãƒ", "Ã¢"]
+    },
+    {
+      "file": ".github/pull_request_template.md",
+      "includes": [
+        "Descripcion obligatoria",
+        "Pruebas y evidencia",
+        "Riesgo y rollback",
+        "Seguridad"
+      ]
+    },
+    {
+      "file": ".github/SECURITY.md",
+      "includes": ["Reporting a vulnerability", "private vulnerability reporting"]
+    },
+    {
+      "file": ".github/dependabot.yml",
+      "includes": ["package-ecosystem: npm", "package-ecosystem: github-actions", "github-packages"]
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "includes": [
+        "merge_group:",
+        "shared-backend-node-nest-ci.yml",
+        "has-cdk: false",
+        "run-aws-integration: true"
+      ]
+    },
+    {
+      "file": "package.json",
+      "includes": [
+        "validate-platform-baseline",
+        "validate-package-manager",
+        "validate-repository",
+        "validate-security-exceptions",
+        "validate-workflows"
+      ]
+    },
+    {
+      "file": ".github/workflows/dora-metrics.yml",
+      "includes": ["schedule:", "Collect DORA metrics", "retention-days: 365"]
+    },
+    {
+      "file": ".github/workflows/governance-audit.yml",
+      "includes": ["schedule:", "GOVERNANCE_DRIFT_ENFORCE", "retention-days: 365"]
+    }
+  ]
+}

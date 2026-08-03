@@ -1,0 +1,103 @@
+name: bus-impl-security-nightly
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: bus-impl-security-nightly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+env:
+  STAGING_BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+  SEMGREP_VERSION: '1.165.0'
+
+jobs:
+  security:
+    name: Nightly Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Actionlint
+        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # v1.72.0
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+      - name: CodeQL init
+        uses: github/codeql-action/init@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        with:
+          languages: javascript-typescript
+          queries: security-extended,security-and-quality
+      - name: CodeQL analyze
+        uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+      - name: Install Semgrep
+        run: python -m pip install semgrep==${{ env.SEMGREP_VERSION }}
+      - name: Semgrep security scan
+        run: semgrep scan --config p/owasp-top-ten --sarif --output semgrep.sarif --error
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        if: success() || failure()
+        with:
+          version: v0.72.0
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 1
+      - name: Trivy IaC scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        if: success() || failure()
+        with:
+          version: v0.72.0
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-iac.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 1
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.72.0
+          scan-type: fs
+          scan-ref: .
+          format: cyclonedx
+          output: bus-impl-nightly-sbom.cdx.json
+      - name: Upload filesystem SARIF
+        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        if: ${{ always() && hashFiles('trivy-fs.sarif') != '' }}
+        with:
+          sarif_file: trivy-fs.sarif
+      - name: Upload IaC SARIF
+        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        if: ${{ always() && hashFiles('trivy-iac.sarif') != '' }}
+        with:
+          sarif_file: trivy-iac.sarif
+      - name: Upload Semgrep SARIF
+        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        if: ${{ always() && hashFiles('semgrep.sarif') != '' }}
+        with:
+          sarif_file: semgrep.sarif
+      - name: Upload SBOM
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: bus-impl-nightly-sbom
+          path: bus-impl-nightly-sbom.cdx.json
+          retention-days: 30
+      - name: OWASP ZAP baseline
+        if: env.STAGING_BASE_URL != ''
+        uses: zaproxy/action-baseline@7c4deb10e6261301961c86d65d54a516394f9aed # v0.14.0
+        with:
+          target: ${{ env.STAGING_BASE_URL }}
+          fail_action: true
+          artifact_name: bus-impl-zap-baseline

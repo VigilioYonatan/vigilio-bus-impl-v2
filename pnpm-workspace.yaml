@@ -1,0 +1,43 @@
+packages:
+  - .
+  - packages/*
+
+injectWorkspacePackages: true
+dedupeInjectedDeps: true
+
+forceLegacyDeploy: true
+
+overrides:
+  multer: '>=2.2.0'
+  js-yaml: '>=4.3.0'
+  fast-uri: '>=3.1.4'
+  find-my-way: '>=9.6.1'
+  'body-parser@>=2.0.0 <2.3.0': '>=2.3.0'
+  esbuild: 0.28.1
+
+nodeVersion: 24.16.0
+engineStrict: true
+preferFrozenLockfile: true
+verifyStoreIntegrity: true
+strictStorePkgContentCheck: true
+verifyDepsBeforeRun: error
+strictDepBuilds: true
+dangerouslyAllowAllBuilds: false
+blockExoticSubdeps: true
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@vigilioyonatan/*'
+  - '@vigilio-services/*'
+trustPolicy: no-downgrade
+trustLockfile: false
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - esbuild
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - core-js
+allowBuilds:
+  '@nestjs/core': true
+  esbuild: true
+  '@scarf/scarf': false
+  core-js: false

@@ -1,0 +1,57 @@
+version: 2
+
+registries:
+  github-packages:
+    type: npm-registry
+    url: https://npm.pkg.github.com
+    token: ${{secrets.DEPENDABOT_GITHUB_PACKAGES_TOKEN}}
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    registries:
+      - github-packages
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Lima
+    open-pull-requests-limit: 8
+    labels:
+      - dependencies
+      - security
+    groups:
+      nestjs:
+        patterns:
+          - "@nestjs/*"
+      aws:
+        patterns:
+          - "@aws-sdk/*"
+          - "aws-cdk*"
+          - "aws-cdk-lib"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "@cucumber/*"
+      tooling:
+        patterns:
+          - "@biomejs/*"
+          - "typescript"
+          - "tsx"
+          - "drizzle-*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: America/Lima
+    open-pull-requests-limit: 5
+    labels:
+      - ci
+      - dependencies
+      - security
+

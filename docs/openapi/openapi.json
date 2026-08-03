@@ -1,0 +1,4093 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/ai-chat/messages": {
+      "post": {
+        "operationId": "AiChatController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiChatAskRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiChatAskResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Amazon Bedrock no disponible o BEDROCK_MODEL_ID no configurado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Enviar mensaje a chatbot IA con Amazon Bedrock",
+        "tags": [
+          "ai-chat"
+        ]
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "operationId": "AuthController_google",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthGoogleRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthGoogleResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Google id_token invalido o no verificable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Login con Google id_token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLoginRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLoginResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales invalidas o usuario inactivo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Login normal con email y password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRefreshRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLogoutResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "rimac_refresh": []
+          }
+        ],
+        "summary": "Revocar la sesion indicada por la cookie HttpOnly",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout-all": {
+      "post": {
+        "operationId": "AuthController_logoutAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthLogoutResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revocar todas las sesiones activas del usuario",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRefreshRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthRefreshResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token invalido, expirado o usuario inactivo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "rimac_refresh": []
+          }
+        ],
+        "summary": "Renovar access token con cookie HttpOnly",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRegisterRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthRegisterResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El email ya esta registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registro con email y password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_health[0]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDocDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verificar que el proceso esta vivo",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "HealthController_health[1]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDocDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verificar que el proceso esta vivo",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "HealthController_readiness[1]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "PostgreSQL no esta disponible."
+          }
+        },
+        "summary": "Verificar que la API y PostgreSQL estan listos",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/startup": {
+      "get": {
+        "operationId": "HealthController_health[2]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDocDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verificar que el proceso esta vivo",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/metrics": {
+      "get": {
+        "operationId": "MetricsController_metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Metrics"
+        ]
+      }
+    },
+    "/products": {
+      "get": {
+        "operationId": "ProductController_index",
+        "parameters": [
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "sku",
+            "in": "query",
+            "schema": {
+              "minLength": 2,
+              "maxLength": 40,
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "exclusiveMinimum": 0,
+              "default": 25,
+              "type": "integer"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "sort_by",
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "sort_dir",
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductIndexResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Indexar productos",
+        "tags": [
+          "products"
+        ]
+      },
+      "post": {
+        "operationId": "ProductController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductStoreRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductStoreResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El sku ya esta registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear producto",
+        "tags": [
+          "products"
+        ]
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "operationId": "ProductController_show",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductShowResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mostrar producto",
+        "tags": [
+          "products"
+        ]
+      },
+      "patch": {
+        "operationId": "ProductController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdateRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductUpdateResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El sku ya esta registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar producto",
+        "tags": [
+          "products"
+        ]
+      },
+      "delete": {
+        "operationId": "ProductController_destroy",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDestroyResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar producto",
+        "tags": [
+          "products"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "HealthController_readiness[0]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "PostgreSQL no esta disponible."
+          }
+        },
+        "summary": "Verificar que la API y PostgreSQL estan listos",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/telemetry/frontend": {
+      "post": {
+        "operationId": "FrontendTelemetryController_ingest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "discriminator": {
+                  "propertyName": "event_type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/FrontendWebVitalTelemetryDocDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FrontendRuntimeErrorTelemetryDocDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FrontendHttpOperationTelemetryDocDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrontendTelemetryIngestResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de telemetria excedido."
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Recibir telemetria operacional acotada del frontend",
+        "tags": [
+          "telemetry"
+        ]
+      }
+    },
+    "/uploads/presigned-url": {
+      "post": {
+        "operationId": "UploadController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadCreatePresignedUrlRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCreatePresignedUrlResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No se pudo generar la URL presignada de S3.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear URL presignada para subir archivos directo a S3",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UserController_index",
+        "parameters": [
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "provider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "exclusiveMinimum": 0,
+              "default": 25,
+              "type": "integer"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "sort_by",
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "required": false,
+            "name": "sort_dir",
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserIndexResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Indexar usuarios",
+        "tags": [
+          "users"
+        ]
+      },
+      "post": {
+        "operationId": "UserController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserStoreRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserStoreResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El email ya esta registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear usuario",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UserController_show",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserShowResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mostrar usuario",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequestDocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserUpdateResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El email ya esta registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar usuario",
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_destroy",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDestroyResponseDocDto_Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request invalido: body, query o params no cumplen el contrato.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token requerido, invalido o expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario autenticado no tiene el rol requerido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error inesperado del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponseDocDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar usuario",
+        "tags": [
+          "users"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Bus Impl API",
+    "description": "API de negocio actualizada a 2026",
+    "version": "2026.06",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "ApiErrorResponseDocDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "message": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message"
+        ]
+      },
+      "AuthRegisterRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 160,
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "email",
+          "full_name",
+          "password"
+        ]
+      },
+      "AuthRegisterResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "token_type": {
+            "type": "string",
+            "const": "Bearer",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "access_token": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "expires_in": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "token_type",
+          "access_token",
+          "expires_in",
+          "user"
+        ]
+      },
+      "ApiValidationErrorResponseDocDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "message": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Campo del request que fallo la validacion."
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Mensaje legible del error de validacion."
+                }
+              },
+              "required": [
+                "field",
+                "message"
+              ]
+            }
+          }
+        },
+        "required": [
+          "statusCode",
+          "message"
+        ]
+      },
+      "AuthLoginRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 160,
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthLoginResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "token_type": {
+            "type": "string",
+            "const": "Bearer",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "access_token": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "expires_in": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "token_type",
+          "access_token",
+          "expires_in",
+          "user"
+        ]
+      },
+      "AuthGoogleRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "id_token": {
+            "type": "string",
+            "minLength": 20
+          }
+        },
+        "required": [
+          "id_token"
+        ]
+      },
+      "AuthGoogleResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "token_type": {
+            "type": "string",
+            "const": "Bearer",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "access_token": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "expires_in": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "token_type",
+          "access_token",
+          "expires_in",
+          "user"
+        ]
+      },
+      "AuthRefreshRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "root": {
+            "default": {},
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false,
+            "x-nestjs_zod-unwrap-root": true,
+            "x-nestjs_zod-self-required": false
+          }
+        }
+      },
+      "AuthRefreshResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "token_type": {
+            "type": "string",
+            "const": "Bearer",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "access_token": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "expires_in": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "token_type",
+          "access_token",
+          "expires_in",
+          "user"
+        ]
+      },
+      "AuthLogoutResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "revoked_sessions": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "revoked_sessions"
+        ]
+      },
+      "UserIndexResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "next": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "email": {
+                  "type": "string",
+                  "maxLength": 160,
+                  "format": "email",
+                  "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                },
+                "full_name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 120
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "admin",
+                    "operador",
+                    "auditor",
+                    "soporte"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "blocked"
+                  ]
+                },
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "local",
+                    "google"
+                  ]
+                },
+                "google_sub": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "email",
+                "full_name",
+                "role",
+                "status",
+                "provider",
+                "google_sub",
+                "created_at",
+                "updated_at"
+              ],
+              "additionalProperties": false
+            },
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "count",
+          "next",
+          "previous",
+          "results"
+        ]
+      },
+      "UserShowResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "user"
+        ]
+      },
+      "UserStoreRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 160,
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "role": {
+            "default": "operador",
+            "type": "string",
+            "enum": [
+              "admin",
+              "operador",
+              "auditor",
+              "soporte"
+            ]
+          },
+          "status": {
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "blocked"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "email",
+          "full_name",
+          "password"
+        ]
+      },
+      "UserStoreResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "user"
+        ]
+      },
+      "UserUpdateRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 160,
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "role": {
+            "default": "operador",
+            "type": "string",
+            "enum": [
+              "admin",
+              "operador",
+              "auditor",
+              "soporte"
+            ]
+          },
+          "status": {
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "blocked"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        }
+      },
+      "UserUpdateResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 160,
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              "full_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "operador",
+                  "auditor",
+                  "soporte"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "blocked"
+                ]
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "google"
+                ]
+              },
+              "google_sub": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "full_name",
+              "role",
+              "status",
+              "provider",
+              "google_sub",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "user"
+        ]
+      },
+      "UserDestroyResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "message": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "AiChatAskRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "system": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "messages": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "content": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                }
+              },
+              "required": [
+                "role",
+                "content"
+              ]
+            },
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "max_tokens": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 2048,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "top_p": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "messages"
+        ]
+      },
+      "AiChatAskResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "conversation_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "answer": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "message": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "assistant"
+                ]
+              },
+              "content": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "input_tokens": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "output_tokens": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "total_tokens": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "input_tokens",
+              "output_tokens",
+              "total_tokens"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "provider": {
+            "type": "object",
+            "properties": {
+              "model_id": {
+                "type": "string"
+              },
+              "stop_reason": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "latency_ms": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "model_id",
+              "stop_reason",
+              "latency_ms"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "conversation_id",
+          "answer",
+          "message",
+          "usage",
+          "provider"
+        ]
+      },
+      "HealthResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ReadinessResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ready",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ProductIndexResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "next": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sku": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 40
+                },
+                "nombre": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 120
+                },
+                "descripcion": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "precio": {
+                  "type": "string",
+                  "pattern": "^\\d{1,10}(\\.\\d{1,2})?$"
+                },
+                "stock": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "archived"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "sku",
+                "nombre",
+                "descripcion",
+                "precio",
+                "stock",
+                "status",
+                "created_at",
+                "updated_at"
+              ],
+              "additionalProperties": false
+            },
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "count",
+          "next",
+          "previous",
+          "results"
+        ]
+      },
+      "ProductShowResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sku": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 40
+              },
+              "nombre": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "descripcion": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "precio": {
+                "type": "string",
+                "pattern": "^\\d{1,10}(\\.\\d{1,2})?$"
+              },
+              "stock": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "archived"
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "sku",
+              "nombre",
+              "descripcion",
+              "precio",
+              "stock",
+              "status",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "product"
+        ]
+      },
+      "ProductStoreRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "nombre": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "descripcion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "precio": {
+            "type": "string",
+            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "stock": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "sku",
+          "nombre",
+          "descripcion",
+          "precio",
+          "stock"
+        ]
+      },
+      "ProductStoreResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sku": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 40
+              },
+              "nombre": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "descripcion": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "precio": {
+                "type": "string",
+                "pattern": "^\\d{1,10}(\\.\\d{1,2})?$"
+              },
+              "stock": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "archived"
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "sku",
+              "nombre",
+              "descripcion",
+              "precio",
+              "stock",
+              "status",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "product"
+        ]
+      },
+      "ProductUpdateRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "nombre": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "descripcion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "precio": {
+            "type": "string",
+            "pattern": "^\\d{1,10}(\\.\\d{1,2})?$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "stock": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "archived"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        }
+      },
+      "ProductUpdateResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sku": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 40
+              },
+              "nombre": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 120
+              },
+              "descripcion": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "precio": {
+                "type": "string",
+                "pattern": "^\\d{1,10}(\\.\\d{1,2})?$"
+              },
+              "stock": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive",
+                  "archived"
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "id",
+              "sku",
+              "nombre",
+              "descripcion",
+              "precio",
+              "stock",
+              "status",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "product"
+        ]
+      },
+      "ProductDestroyResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "message": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "FrontendWebVitalTelemetryDocDto": {
+        "type": "object",
+        "properties": {
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9._:-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "release": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "route": {
+            "type": "string",
+            "maxLength": 160,
+            "pattern": "^(?:\\/|\\/(?:[a-z][a-z0-9-]*|:[a-z][a-z0-9-]*)(?:\\/(?:[a-z][a-z0-9-]*|:[a-z][a-z0-9-]*))*)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "schema_version": {
+            "type": "number",
+            "const": 1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "development",
+              "test",
+              "staging",
+              "production"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "event_type": {
+            "type": "string",
+            "const": "web_vital",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "CLS",
+              "INP",
+              "LCP"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "rating": {
+            "type": "string",
+            "enum": [
+              "good",
+              "needs-improvement",
+              "poor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 120000,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "correlation_id",
+          "event_id",
+          "occurred_at",
+          "release",
+          "route",
+          "schema_version",
+          "stage",
+          "event_type",
+          "name",
+          "rating",
+          "value"
+        ]
+      },
+      "FrontendRuntimeErrorTelemetryDocDto": {
+        "type": "object",
+        "properties": {
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9._:-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "release": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "route": {
+            "type": "string",
+            "maxLength": 160,
+            "pattern": "^(?:\\/|\\/(?:[a-z][a-z0-9-]*|:[a-z][a-z0-9-]*)(?:\\/(?:[a-z][a-z0-9-]*|:[a-z][a-z0-9-]*))*)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "schema_version": {
+            "type": "number",
+            "const": 1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "development",
+              "test",
+              "staging",
+              "production"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "error_class": {
+            "type": "string",
+            "enum": [
+              "resource_load",
+              "unhandled_error",
+              "unhandled_rejection"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "event_type": {
+            "type": "string",
+            "const": "runtime_error",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "correlation_id",
+          "event_id",
+          "occurred_at",
+          "release",
+          "route",
+          "schema_version",
+          "stage",
+          "error_class",
+          "event_type",
+          "message"
+        ]
+      },
+      "FrontendHttpOperationTelemetryDocDto": {
+        "type": "object",
+        "properties": {
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9._:-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "release": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "route": {
+            "type": "string",
+            "maxLength": 160,
+            "pattern": "^(?:\\/|\\/(?:[a-z][a-z0-9-]*|:[a-z][a-z0-9-]*)(?:\\/(?:[a-z][a-z0-9-]*|:[a-z][a-z0-9-]*))*)$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "schema_version": {
+            "type": "number",
+            "const": 1,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "development",
+              "test",
+              "staging",
+              "production"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "duration_ms": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 120000,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "event_type": {
+            "type": "string",
+            "const": "http_operation",
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "DELETE",
+              "GET",
+              "PATCH",
+              "POST",
+              "PUT"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "status_code": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 599,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "correlation_id",
+          "event_id",
+          "occurred_at",
+          "release",
+          "route",
+          "schema_version",
+          "stage",
+          "duration_ms",
+          "event_type",
+          "method",
+          "status_code"
+        ]
+      },
+      "FrontendTelemetryIngestResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "accepted",
+          "success"
+        ]
+      },
+      "UploadCreatePresignedUrlRequestDocDto": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "mime_type": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/webp",
+              "application/pdf",
+              "application/zip",
+              "text/csv"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "avatar",
+              "document",
+              "product_image",
+              "evidence"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "size_bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 52428800,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "file_name",
+          "mime_type",
+          "purpose",
+          "size_bytes"
+        ]
+      },
+      "UploadCreatePresignedUrlResponseDocDto_Output": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "upload": {
+            "type": "object",
+            "properties": {
+              "bucket": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cache_control": {
+                "type": "string",
+                "minLength": 1
+              },
+              "expires_in": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 3600
+              },
+              "headers": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "max_size_bytes": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "method": {
+                "type": "string",
+                "const": "PUT"
+              },
+              "purpose": {
+                "type": "string",
+                "enum": [
+                  "avatar",
+                  "document",
+                  "product_image",
+                  "evidence"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "bucket",
+              "cache_control",
+              "expires_in",
+              "headers",
+              "key",
+              "max_size_bytes",
+              "method",
+              "purpose",
+              "url"
+            ],
+            "additionalProperties": false,
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "success",
+          "upload"
+        ]
+      }
+    }
+  }
+}

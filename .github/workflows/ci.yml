@@ -1,0 +1,33 @@
+name: bus-impl-v2-ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  application:
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@87fe5c0890d6a1b639ce00431bf10d92453fdda2 # v1
+    with:
+      has-cdk: false
+      has-openapi: true
+      has-postgres: true
+      run-aws-integration: true
+      run-bdd: true
+      run-e2e: true
+      run-security-deep: true
+      e2e-script: ${{ github.event_name == 'pull_request' && 'test:e2e:critical' || 'test:e2e' }}
+      attest-artifact: ${{ github.event_name == 'push' }}
+      gitops-bot-actor: ${{ vars.GITOPS_BOT_ACTOR || 'github-actions[bot]' }}
+    secrets: inherit

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "targets": ["dist", "drizzle", "docs/openapi/openapi.json", "reports"],
+  "exclude_patterns": [
+    "**/node_modules",
+    "**/node_modules/**",
+    "reports/operational-evidence-*.json"
+  ],
+  "max_files": 10000,
+  "production_stages": ["staging", "production"],
+  "expected_files": {
+    "sbom": "reports/sbom-{stage}.cdx.json",
+    "artifact_digests": "reports/artifact-digests-{stage}.txt",
+    "slsa_provenance": "reports/slsa-provenance-{stage}.intoto.json",
+    "slsa_signature": "reports/slsa-provenance-{stage}.intoto.json.sig",
+    "smoke_result": "reports/smoke-{stage}.txt",
+    "rollback_target": "reports/rollback-target-{stage}.json"
+  }
+}

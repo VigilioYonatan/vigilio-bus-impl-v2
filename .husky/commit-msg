@@ -1,0 +1,1 @@
+pnpm exec vigilio-governance validate-commit-message --message-file "$1"

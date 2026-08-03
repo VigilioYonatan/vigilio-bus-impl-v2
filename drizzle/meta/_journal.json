@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1781024898802,
+      "tag": "0000_unique_greymalkin",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781067855102,
+      "tag": "0001_brainy_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784000000000,
+      "tag": "0002_auth_sessions_and_login_attempts",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+schema: spec-driven
+
+context: |
+  # bus-impl-v2 — Senior Mode 2026
+
+  ## Stack
+  - Runtime: Node.js 24.16.0, ESM, pnpm 11.7.0
+  - Framework: NestJS 11, Express platform
+  - Validation: Zod 4 (never class-validator, Joi, or Prisma)
+  - ORM: Drizzle ORM 0.45 + PostgreSQL 17
+  - Linter/Formatter: Biome 2.4 (never ESLint or Prettier)
+  - Testing: Vitest 4 (unit/integration), Cucumber 13 (BDD), Playwright 1.60 (E2E)
+  - Cloud runtime: Kubernetes/EKS + AWS SDK con Pod Identity; IaC Terraform vive fuera de la app
+  - Auth: JWT (jose), private-by-default, JwtAuthGuard global, @Public() solo con justificacion
+  - Logging: Pino + nestjs-pino con redaction de secrets/PII
+  - Docs: OpenAPI (Swagger/Scalar), Drizzle migrations
+
+  ## Conventions
+  - Path aliases: @/ -> src/, @tests/ -> tests/
+  - Imports: relativos locales, ESM sin .js manual
+  - No any, no non-null assertions, no type casts para esconder errores
+  - Backend private-by-default
+  - Contratos Zod de entrada/salida, nunca filas DB como response
+  - Dinero y decimales regulatorios como string exacto, nunca number
+  - Conventional commits: feat|fix|hotfix|refactor|docs|test|ci|build|chore|perf|revert
+
+  ## Prohibido
+  - class-validator, Prisma, TypeORM, Joi, ESLint, Prettier
+  - Secretos hardcodeados, PII en logs
+  - Abstracciones sin uso real (entities, factories, mappers solo si hay comportamiento)
+  - anywhere, @ts-ignore, @ts-expect-error
+  - Dependencias sin evaluacion de impacto (no instalar sin ADR si agrega riesgo)
+
+  ## Quality Gates
+  - pnpm lint (Biome CI)
+  - pnpm typecheck
+  - pnpm test:coverage (thresholds: lines 85%, functions 85%, branches 80%, statements 85%)
+  - pnpm test:bdd (Cucumber)
+  - pnpm openapi:diff (no breaking changes sin aprobacion)
+
+rules:
+  proposal:
+    - Identificar el bounded context afectado (src/{feature}/)
+    - Listar invariantes del aggregate antes de disenar
+    - Incluir "Non-goals" explicitamente (que NO hace este cambio)
+    - Mapear riesgos: seguridad, concurrencia, consistencia eventual, migracion de datos
+    - Especificar si requiere cambios en Terraform/Helm externos, migraciones DB o contratos OpenAPI
+
+  specs:
+    - Spec funcional por caso de uso, no por endpoint
+    - Cubrir: happy path, validaciones, conflictos, errores externos, autorizacion
+    - Especificar invariantes del aggregate y constraints en DB
+    - Para dinero: especificar precision, redondeo y quien lo calcula
+    - Para auth: especificar token type, scopes, ownership vs role, tenant isolation
+    - Para AWS: especificar IAM actions minimas, KMS keys, VPC endpoints
+    - No mezclar requirements con implementacion
+
+  design:
+    - Incluir diagrama de secuencia o flujo para casos no triviales
+    - Especificar patron: controller -> service (port) -> repository (Drizzle adapter)
+    - Para cambios multi-tabla: incluir strategy de transaccion y outbox si aplica
+    - Para cache: especificar TTL, key scheme, invalidation strategy, source of truth
+    - Para migraciones: especificar expand-contract, compatibilidad backward, rollback
+    - Para S3: especificar presigned URL expiry, MIME validation, key scheme
+    - Para Bedrock/IA: especificar model, max tokens, temperature, prompt sanitization
+    - Estimar impacto en costos AWS si aplica
+    - Incluir estrategia de observabilidad: logs, métricas, alarmas
+
+  tasks:
+    - Cada tarea debe ser implementable en <= 2 horas
+    - Orden: schemas -> DTOs -> ports -> service -> repository -> controller -> module -> tests
+    - Separar tareas por capa: application, infrastructure, test y plataforma externa
+    - Incluir tarea explicita de "agregar/actualizar tests de regresion"
+    - Incluir tarea de validacion: pnpm lint + typecheck + test:coverage + openapi:diff
+    - Para cambios con DB: incluir tarea de generar y verificar migracion
+    - Para cambios de plataforma: coordinar Terraform plan y Helm/Kubernetes CI en su repositorio
+    - Para cambios de auth: incluir tarea de security review

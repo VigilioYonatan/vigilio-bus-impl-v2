@@ -1,0 +1,67 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!.agents/skills",
+      "!.artifacts",
+      "!.opencode",
+      "!coverage",
+      "!cdk.out",
+      "!**/dist",
+      "!node_modules",
+      "!playwright-report",
+      "!reports",
+      "!test-results",
+      "!drizzle",
+      "!docs/openapi/openapi.json"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "suspicious": {
+        "noExplicitAny": "error"
+      },
+      "security": {
+        "noSecrets": {
+          "level": "error",
+          "options": {
+            "entropyThreshold": 50
+          }
+        }
+      },
+      "correctness": {
+        "noUnusedFunctionParameters": "off"
+      },
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "error",
+        "useExportType": "error",
+        "useImportType": "error",
+        "useNodejsImportProtocol": "error"
+      }
+    }
+  }
+}

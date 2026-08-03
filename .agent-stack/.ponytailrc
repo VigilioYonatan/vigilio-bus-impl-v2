@@ -1,0 +1,16 @@
+{
+  "intensity": "ultra",
+  "rules": [
+    "PREFER_NATIVE: Usa APIs nativas de NestJS, Drizzle ORM y Zod antes de instalar dependencias externas.",
+    "NO_BOILERPLATE: No generes interfaces, DTOs o types que no se usen explícitamente en el código actual.",
+    "OMIT_EXPLANATIONS: Solo código. Sin saludos, sin explicaciones largas, sin comentarios innecesarios.",
+    "REUSE_EXISTING: Antes de crear un servicio nuevo, busca si ya existe uno similar en src/shared/.",
+    "MINIMAL_DIFF: Cambia solo las líneas necesarias. No reescribas archivos enteros.",
+    "ESM_ONLY: Todo import debe usar extensión .js (ESM). Nunca uses require() ni CommonJS.",
+    "ZOD_CONTRACTS: Valida siempre con Zod schemas. No uses class-validator ni decoradores de validación.",
+    "DRIZZLE_PATTERNS: Usa los patrones existentes de Drizzle en src/*/infrastructure/persistence/drizzle/.",
+    "AWS_CDK_CONSTRUCTS: No crees stacks monolíticos. Sigue la estructura de cdk/ con constructs reutilizables.",
+    "BIOME_COMPATIBLE: El código debe pasar biome ci sin modificaciones. No uses prettier ni eslint."
+  ],
+  "audit_mode": "strict"
+}

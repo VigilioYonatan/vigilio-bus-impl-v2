@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: es
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  path_instructions:
+    - path: "src/auth/**"
+      instructions: "Revisa rigurosamente: validación de tokens, rotación de refresh tokens, exposición de secretos en logs, y uso correcto de bcrypt/argon2."
+    - path: "src/worker/**"
+      instructions: "Valida semántica at-least-once: no reconocer mensajes inválidos, borrar solo después de éxito, correlación segura y cierre por SIGTERM."
+    - path: "drizzle/**"
+      instructions: "Revisa que las migraciones sean reversibles y no contengan DROP destructivos sin confirmación explícita."
+    - path: "src/**/dtos/**"
+      instructions: "Valida que todos los DTOs usen Zod schemas y no expongan campos internos (IDs de BD, timestamps de auditoría) al cliente."
+    - path: "scripts/**"
+      instructions: "Verifica que los scripts de governance no tengan bypasses condicionales que permitan saltarse validaciones."
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - develop
+  tools:
+    biome:
+      enabled: true
+    github-checks:
+      enabled: true
+    languagetool:
+      enabled: true
+      enabled_categories:
+        - TYPOS
+        - GRAMMAR
+chat:
+  auto_reply: true

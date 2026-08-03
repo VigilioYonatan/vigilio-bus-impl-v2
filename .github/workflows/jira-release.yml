@@ -1,0 +1,70 @@
+name: bus-impl-jira-release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Jira Fix Version to create or update
+        required: true
+        type: string
+      issue_keys:
+        description: Optional comma-separated Jira issue keys. If empty, commits are scanned.
+        required: false
+        type: string
+        default: ''
+      release_version:
+        description: Mark the Jira version as released
+        required: true
+        type: choice
+        options: ['true', 'false']
+        default: 'false'
+
+permissions:
+  contents: read
+
+jobs:
+  jira-release:
+    name: Jira Fix Version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Extract Jira issues from release commits
+        id: issue_keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${MANUAL_ISSUE_KEYS}" ]; then
+            issue_keys="${MANUAL_ISSUE_KEYS}"
+          else
+            previous_tag="$(git describe --tags --abbrev=0 "${GITHUB_SHA}^" 2>/dev/null || true)"
+            if [ -n "${previous_tag}" ]; then
+              range="${previous_tag}..${GITHUB_SHA}"
+            else
+              range="${GITHUB_SHA}~50..${GITHUB_SHA}"
+            fi
+            issue_keys="$(git log --format=%B "${range}" 2>/dev/null | grep -Eo '[A-Z][A-Z0-9]+-[0-9]+' | sort -u | paste -sd ',' - || true)"
+          fi
+          echo "issue_keys=${issue_keys}" >> "${GITHUB_OUTPUT}"
+          echo "Jira issue keys: ${issue_keys:-none}"
+        env:
+          MANUAL_ISSUE_KEYS: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_keys || '' }}
+      - name: Create Jira Fix Version
+        if: steps.issue_keys.outputs.issue_keys != ''
+        uses: VigilioYonatan/vigilio-platform-actions/actions/jira-devops@87fe5c0890d6a1b639ce00431bf10d92453fdda2 # v1
+        with:
+          mode: release
+          project-key: ${{ vars.JIRA_PROJECT_KEY }}
+          version: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
+          issue-keys: ${{ steps.issue_keys.outputs.issue_keys }}
+          release-version: ${{ github.event_name == 'workflow_dispatch' && inputs.release_version || 'true' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}

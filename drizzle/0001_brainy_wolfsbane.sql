@@ -1,0 +1,1 @@
+ALTER TABLE "products" ALTER COLUMN "precio" SET DATA TYPE numeric(12,2);
