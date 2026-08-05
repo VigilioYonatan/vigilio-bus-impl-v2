@@ -23,20 +23,4 @@ permissions:
 jobs:
   application:
     uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@v1
-    with:
-      has-cdk: false
-      has-openapi: true
-      has-postgres: true
-      run-aws-integration: true
-      run-bdd: true
-      run-e2e: true
-      run-security-deep: true
-      e2e-script: test:e2e
-      attest-artifact: true
-      gitops-bot-actor: github-actions[bot]
-    secrets:
-      GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
-      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
