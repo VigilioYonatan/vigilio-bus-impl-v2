@@ -16,8 +16,8 @@ permissions:
   actions: read
   contents: read
   packages: read
-  attestations: write # actions/attest-build-provenance@v2
-  id-token: write # actions/attest-build-provenance@v2
+  attestations: write # delegated: artifact attestation in shared workflow
+  id-token: write     # delegated: OIDC token for attestation and AWS in shared workflow
   security-events: write
   pull-requests: read
 
