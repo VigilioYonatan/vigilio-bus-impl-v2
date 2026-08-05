@@ -115,14 +115,14 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@vigilioyonatan/devsecops-governance':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0
+        version: 0.3.0
       '@vigilioyonatan/node-nest-tooling':
         specifier: 0.3.0
         version: 0.3.0(@opentelemetry/api@1.9.1)(@types/pg@8.16.0)
       '@vigilioyonatan/vigilio-skills':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.1
+        version: 0.3.1
       '@vitest/coverage-v8':
         specifier: 4.1.9
         version: 4.1.9(vitest@4.1.9)
@@ -1161,8 +1161,8 @@ packages:
     engines: {node: '>=24 <25'}
     hasBin: true
 
-  '@vigilioyonatan/devsecops-governance@0.2.0':
-    resolution: {integrity: sha512-o7k/K2WZt1OcUuHoPKM5YF6vQx309aHiOCUz6RGWGadSopQtGhzy2hU+7hvz6gIKyLjG5RBSguhMfhywTj/WSg==, tarball: https://npm.pkg.github.com/download/@vigilioyonatan/devsecops-governance/0.2.0/9f7dc4e0e3bf02f725d9481b080821878c098245}
+  '@vigilioyonatan/devsecops-governance@0.3.0':
+    resolution: {integrity: sha512-BrHqbv5ZvoZP1Q4M1ArvNH6cMFA1WwZr13BR47rZqCH7i8XtLNvgVUntH9B6swnuGMwOJz6w2z05HfT+OFFz0A==, tarball: https://npm.pkg.github.com/download/@vigilioyonatan/devsecops-governance/0.3.0/3a3a46c1001992367889b04b786f9527e3395a3f}
     hasBin: true
 
   '@vigilioyonatan/node-nest-tooling@0.3.0':
@@ -1170,8 +1170,8 @@ packages:
     engines: {node: '>=24 <25'}
     hasBin: true
 
-  '@vigilioyonatan/vigilio-skills@0.2.0':
-    resolution: {integrity: sha512-nF1+GttbphGZ3NkDbCBzO0m603lVh5FnIF3NeG6onfIVyHD+ehgiAxHcoSrmWLc0yB0/wAIrsyDkz6h5J6Cubg==, tarball: https://npm.pkg.github.com/download/@vigilioyonatan/vigilio-skills/0.2.0/aab20720a54052e2a9d12f9ec2784e6521f16dbd}
+  '@vigilioyonatan/vigilio-skills@0.3.1':
+    resolution: {integrity: sha512-HPwF7j/wkB3lswr5+UxMFTgOXCc2z1VLi6db3pKcwJPVQ9h//EO1SYzLfB7x7ja50xlBeo6jO/5OvtQ+FQ8KKg==, tarball: https://npm.pkg.github.com/download/@vigilioyonatan/vigilio-skills/0.3.1/4e31b8df5ab2174e5c8e0cf27e0236efc5aac29e}
     engines: {node: '>=24 <25'}
     hasBin: true
 
@@ -4053,7 +4053,7 @@ snapshots:
     dependencies:
       micromatch: 4.0.8
 
-  '@vigilioyonatan/devsecops-governance@0.2.0': {}
+  '@vigilioyonatan/devsecops-governance@0.3.0': {}
 
   '@vigilioyonatan/node-nest-tooling@0.3.0(@opentelemetry/api@1.9.1)(@types/pg@8.16.0)':
     dependencies:
@@ -4090,7 +4090,7 @@ snapshots:
       - sql.js
       - sqlite3
 
-  '@vigilioyonatan/vigilio-skills@0.2.0': {}
+  '@vigilioyonatan/vigilio-skills@0.3.1': {}
 
   '@vitest/coverage-v8@4.1.9(vitest@4.1.9)':
     dependencies:
