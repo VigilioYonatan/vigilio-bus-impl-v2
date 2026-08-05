@@ -27,7 +27,8 @@ jobs:
       run-bdd: true
       run-e2e: true
       run-security-deep: true
-      e2e-script: ${{ github.event_name == 'pull_request' && 'test:e2e:critical' || 'test:e2e' }}
-      attest-artifact: ${{ github.event_name == 'push' }}
-      gitops-bot-actor: ${{ vars.GITOPS_BOT_ACTOR || 'github-actions[bot]' }}
+      e2e-script: test:e2e
+      attest-artifact: true
+      gitops-bot-actor: github-actions[bot]
     secrets: inherit
+
