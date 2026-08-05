@@ -129,5 +129,8 @@
     "*.{json,md,yml,yaml}": [
       "biome format --write --no-errors-on-unmatched"
     ]
+  },
+  "overrides": {
+    "fast-uri": "^4.1.2"
   }
 }
