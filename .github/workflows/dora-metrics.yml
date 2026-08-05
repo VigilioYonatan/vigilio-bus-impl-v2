@@ -39,7 +39,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
-      - uses: VigilioYonatan/vigilio-platform-actions/actions/configure-github-packages@87fe5c0890d6a1b639ce00431bf10d92453fdda2 # v1
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/configure-github-packages@74ad35aeb42db1ffed5ed03527339aac28f700b8 # v1
         with:
           token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
       - run: pnpm install --frozen-lockfile --prefer-offline
