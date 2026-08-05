@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   application:
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@10bcb4e5b6a24f060064f2eb3bd341cab14fa36a # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@v1
     with:
       has-cdk: false
       has-openapi: true
@@ -34,5 +34,9 @@ jobs:
       e2e-script: test:e2e
       attest-artifact: true
       gitops-bot-actor: github-actions[bot]
-    secrets: inherit
+    secrets:
+      GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
