@@ -37,7 +37,7 @@ jobs:
       run-aws-integration: true
       run-bdd: true
       run-e2e: true
-      run-browser-e2e: true   # Playwright browser E2E via Chromium
+      run-browser-e2e: false  # API backend service: no browser .browser.spec.ts files
       run-security-deep: true
       e2e-script: ${{ github.event_name == 'pull_request' && 'test:e2e:critical' || 'test:e2e' }}
       attest-artifact: ${{ github.event_name == 'push' }}
