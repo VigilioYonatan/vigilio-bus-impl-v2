@@ -29,11 +29,12 @@ permissions:
 
 jobs:
   application:
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@275acf334a37e5a93facd580bc80e162c817a343 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@13579de147a1888f1011679fcd81e9476a2b7558 # v1
     with:
       has-cdk: false
       has-openapi: true
       has-postgres: true
+      postgres-version: '17-alpine'
       run-aws-integration: true
       run-bdd: true
       run-e2e: true
