@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
-          repository: VigilioYonatan/vigilio-deploy
+          repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
           persist-credentials: false
 
       - name: Resolve digest from input or staging values.yaml
@@ -90,7 +90,7 @@ jobs:
     with:
       stage: production
       image-digest: ${{ needs.resolve-digest.outputs.image-digest }}
-      gitops-repository: VigilioYonatan/vigilio-deploy
+      gitops-repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
       values-file: gitops/apps/bus-impl-v2/production/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
@@ -130,6 +130,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE_DIGEST: ${{ needs.resolve-digest.outputs.image-digest }}
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
         run: |
           set -euo pipefail
           short_digest="${IMAGE_DIGEST#sha256:}"
@@ -139,7 +140,7 @@ jobs:
           # Poll every 60 seconds for up to 30 minutes (30 attempts)
           for attempt in $(seq 1 30); do
             state="$(gh pr list \
-              --repo "VigilioYonatan/vigilio-deploy" \
+              --repo "${GITOPS_REPO}" \
               --head "${branch}" \
               --state all \
               --json state \

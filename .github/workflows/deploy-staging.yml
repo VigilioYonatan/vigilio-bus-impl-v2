@@ -67,7 +67,7 @@ jobs:
     with:
       stage: staging
       image-digest: ${{ needs.container-build.outputs.image-digest }}
-      gitops-repository: VigilioYonatan/vigilio-deploy
+      gitops-repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
       values-file: gitops/apps/bus-impl-v2/staging/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
@@ -101,6 +101,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE_DIGEST: ${{ needs.container-build.outputs.image-digest }}
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
         run: |
           set -euo pipefail
           # Reconstruct branch name from digest — matches shared-gitops-promote logic:
@@ -109,7 +110,7 @@ jobs:
           branch="gitops/promote-staging-${short_digest:0:12}"
 
           pr_url="$(gh pr list \
-            --repo "VigilioYonatan/vigilio-deploy" \
+            --repo "${GITOPS_REPO}" \
             --head "${branch}" \
             --state open \
             --json url \
