@@ -5,6 +5,12 @@ on:
     branches: [main]
   push:
     branches: [main]
+    # Skip expensive CI on pushes that only update GitOps manifests or docs.
+    # Those changes come from GitOps promotion PRs and don't need a full test run.
+    paths-ignore:
+      - 'deploy/gitops/**'
+      - '**.md'
+      - 'docs/**'
   merge_group:
     types: [checks_requested]
 
@@ -31,9 +37,9 @@ jobs:
       run-aws-integration: true
       run-bdd: true
       run-e2e: true
+      run-browser-e2e: true   # Playwright browser E2E via Chromium
       run-security-deep: true
       e2e-script: ${{ github.event_name == 'pull_request' && 'test:e2e:critical' || 'test:e2e' }}
       attest-artifact: ${{ github.event_name == 'push' }}
       gitops-bot-actor: ${{ vars.GITOPS_BOT_ACTOR || 'github-actions[bot]' }}
     secrets: inherit
-

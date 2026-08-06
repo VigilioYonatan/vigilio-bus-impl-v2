@@ -1,0 +1,52 @@
+# ── Version control
+.git
+.gitignore
+.gitattributes
+
+# ── CI/CD (never bake secrets or workflow configs into the image)
+.github
+.husky
+
+# ── Node.js garbage
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+
+# ── Test infrastructure (no test code in prod image)
+tests
+coverage
+reports
+playwright-report
+test-results
+
+# ── Local dev config
+.env
+.env.*
+!.env.example
+*.local
+
+# ── Documentation & assets (not needed at runtime)
+docs
+*.md
+*.mdx
+LICENSE
+
+# ── Build artifacts (always regenerated inside the container)
+dist
+
+# ── TypeScript source (compiled to dist)
+src
+
+# ── Scripts (dev / load-test / seed scripts)
+scripts
+
+# ── Tooling config (not needed at runtime)
+biome.json
+tsconfig*.json
+vitest.config.*
+playwright.config.*
+commitlint.config.*
+
+# ── OS noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,201 @@
+name: bus-impl-v2-deploy-production
+
+# Production deploys are ALWAYS manual and require a code-owner-approved PR.
+#
+# Promotion strategy (immutable artifact):
+#   1. Read the current image digest from staging values.yaml (or accept explicit override).
+#   2. Create a GitOps promotion PR for production — same sha256 digest that
+#      was validated in staging. NO new image build.
+#   3. Code owner reviews + approves the one-line digest change.
+#   4. After the PR merges, ArgoCD reconciles production and Argo Rollouts
+#      runs the canary strategy with Prometheus SLO analysis.
+#   5. Smoke tests validate the production endpoints post-deploy.
+#
+# This workflow MUST be triggered from the main branch only.
+on:
+  workflow_dispatch:
+    inputs:
+      image-digest:
+        description: >
+          Image digest to promote (sha256:…). Leave blank to use the digest
+          currently deployed in staging (deploy/gitops/apps/bus-impl-v2/staging/values.yaml).
+        required: false
+        default: ''
+
+concurrency:
+  group: bus-impl-v2-deploy-production
+  cancel-in-progress: false
+
+# Production promotion does NOT build a new image — no OIDC needed.
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 1: Resolve the immutable digest to promote.
+  #         Priority: explicit input → staging values.yaml (current digest)
+  # ─────────────────────────────────────────────────────────────────────────
+  resolve-digest:
+    name: Resolve image digest
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image-digest: ${{ steps.resolve.outputs.digest }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: Resolve digest from input or staging values.yaml
+        id: resolve
+        shell: bash
+        env:
+          EXPLICIT_DIGEST: ${{ inputs.image-digest }}
+          STAGING_VALUES: deploy/gitops/apps/bus-impl-v2/staging/values.yaml
+        run: |
+          set -euo pipefail
+          if [[ -n "${EXPLICIT_DIGEST}" ]]; then
+            digest="${EXPLICIT_DIGEST}"
+            echo "Using explicit digest: ${digest}"
+          else
+            digest="$(grep -E '^\s+digest:' "${STAGING_VALUES}" | awk '{print $2}')"
+            echo "Resolved staging digest: ${digest}"
+          fi
+
+          # Validate format
+          [[ "${digest}" =~ ^sha256:[a-f0-9]{64}$ ]] || {
+            echo "::error::Invalid digest format: ${digest}"
+            exit 1
+          }
+
+          # Reject placeholder / zero digest
+          [[ "${digest}" != "sha256:0000000000000000000000000000000000000000000000000000000000000000" ]] || {
+            echo "::error::Staging digest is still the placeholder — deploy to staging first."
+            exit 1
+          }
+
+          echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 2: Create a GitOps promotion PR for production.
+  #         The PR updates only the image.digest field in production/values.yaml.
+  #         A code owner MUST approve before auto-merge can complete.
+  # ─────────────────────────────────────────────────────────────────────────
+  promote:
+    name: GitOps promote → production
+    needs: [resolve-digest]
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    with:
+      stage: production
+      image-digest: ${{ needs.resolve-digest.outputs.image-digest }}
+      values-file: deploy/gitops/apps/bus-impl-v2/production/values.yaml
+      gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
+    secrets:
+      GITOPS_APP_PRIVATE_KEY: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 3: Wait for the production promotion PR to be reviewed, approved, and
+  #         merged by a code owner. After merge ArgoCD syncs production and
+  #         Argo Rollouts starts the canary with Prometheus SLO analysis.
+  #         Then run smoke tests against the production endpoints.
+  #
+  # NOTE: This job polls for PR merge with a 30-minute window. A code owner
+  #       must manually approve and merge the promotion PR during this window.
+  #       If not merged in time, re-run this job after approving.
+  # ─────────────────────────────────────────────────────────────────────────
+  smoke:
+    name: Await approval + smoke tests (production)
+    needs: [resolve-digest, promote]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: production
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          permission-pull-requests: read
+
+      - name: Wait for production promotion PR to be merged
+        id: await-merge
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          IMAGE_DIGEST: ${{ needs.resolve-digest.outputs.image-digest }}
+        run: |
+          set -euo pipefail
+          short_digest="${IMAGE_DIGEST#sha256:}"
+          branch="gitops/promote-production-${short_digest:0:12}"
+
+          echo "Waiting for promotion PR on branch '${branch}' to be merged..."
+          # Poll every 60 seconds for up to 30 minutes (30 attempts)
+          for attempt in $(seq 1 30); do
+            state="$(gh pr list \
+              --repo "${GITHUB_REPOSITORY}" \
+              --head "${branch}" \
+              --state all \
+              --json state \
+              --jq '.[0].state // "NOT_FOUND"')"
+
+            case "${state}" in
+              MERGED)
+                echo "✓ Promotion PR merged on attempt ${attempt}"
+                break
+                ;;
+              CLOSED)
+                echo "::error::Promotion PR was closed without merging. Aborting."
+                exit 1
+                ;;
+              NOT_FOUND)
+                echo "PR not found yet — waiting..."
+                ;;
+              *)
+                echo "Attempt ${attempt}/30: PR state=${state}. Awaiting code owner approval + merge..."
+                ;;
+            esac
+            sleep 60
+          done
+
+          if [[ "${state}" != "MERGED" ]]; then
+            echo "::error::Production promotion PR not merged within 30 minutes."
+            echo "Review and approve the PR, then re-run this job."
+            exit 1
+          fi
+
+          # Give ArgoCD time to reconcile after the merge
+          echo "Waiting 90s for ArgoCD to reconcile production..."
+          sleep 90
+
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+        with:
+          github-packages-token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Smoke tests (production)
+        shell: bash
+        env:
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "${APP_BASE_URL}" || {
+            echo "::error::APP_BASE_URL not configured for production environment"
+            exit 1
+          }
+          echo "Target: ${APP_BASE_URL}"
+          # 6 attempts × 30s = 3 min — production should be up by now
+          for attempt in $(seq 1 6); do
+            echo "── Smoke attempt ${attempt}/6 ──"
+            if pnpm smoke:endpoints; then
+              echo "✓ Production smoke passed"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::Production smoke tests failed after 6 attempts"
+          exit 1
