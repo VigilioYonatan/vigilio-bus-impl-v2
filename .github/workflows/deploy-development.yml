@@ -30,7 +30,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────
   container-build:
     name: Build, scan & push container (dev)
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       dockerfile: Dockerfile
       image-repository: ${{ vars.ECR_REPOSITORY_DEVELOPMENT }}
@@ -42,18 +42,19 @@ jobs:
       GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
 
   # ─────────────────────────────────────────────────────────────────────────
-  # Job 2: Update deploy/gitops/…/development/values.yaml with the new
+  # Job 2: Update gitops/…/development/values.yaml with the new
   #         immutable image digest and open a GitOps promotion PR.
   # ─────────────────────────────────────────────────────────────────────────
   promote:
     name: GitOps promote → development
     needs: [container-build]
     if: inputs.deploy-mode == 'apply'
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       stage: development
       image-digest: ${{ needs.container-build.outputs.image-digest }}
-      values-file: deploy/gitops/apps/bus-impl-v2/development/values.yaml
+      gitops-repository: VigilioYonatan/vigilio-deploy
+      values-file: gitops/apps/bus-impl-v2/development/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
       GITOPS_APP_PRIVATE_KEY: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -90,7 +91,7 @@ jobs:
           branch="gitops/promote-development-${short_digest:0:12}"
 
           pr_url="$(gh pr list \
-            --repo "${GITHUB_REPOSITORY}" \
+            --repo "VigilioYonatan/vigilio-deploy" \
             --head "${branch}" \
             --state open \
             --json url \

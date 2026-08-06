@@ -42,7 +42,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────
   container-build:
     name: Build, scan & push container
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       dockerfile: Dockerfile
       image-repository: ${{ vars.ECR_REPOSITORY_STAGING }}
@@ -55,7 +55,7 @@ jobs:
       GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
 
   # ─────────────────────────────────────────────────────────────────────────
-  # Job 2: Update deploy/gitops/…/staging/values.yaml with the new immutable
+  # Job 2: Update gitops/…/staging/values.yaml with the new immutable
   #         image digest and open a GitOps promotion PR (bot-owned).
   #         ArgoCD picks it up after the PR auto-merges.
   # ─────────────────────────────────────────────────────────────────────────
@@ -63,11 +63,12 @@ jobs:
     name: GitOps promote → staging
     needs: [container-build]
     if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       stage: staging
       image-digest: ${{ needs.container-build.outputs.image-digest }}
-      values-file: deploy/gitops/apps/bus-impl-v2/staging/values.yaml
+      gitops-repository: VigilioYonatan/vigilio-deploy
+      values-file: gitops/apps/bus-impl-v2/staging/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
       GITOPS_APP_PRIVATE_KEY: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -108,7 +109,7 @@ jobs:
           branch="gitops/promote-staging-${short_digest:0:12}"
 
           pr_url="$(gh pr list \
-            --repo "${GITHUB_REPOSITORY}" \
+            --repo "VigilioYonatan/vigilio-deploy" \
             --head "${branch}" \
             --state open \
             --json url \

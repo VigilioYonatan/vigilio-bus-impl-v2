@@ -45,6 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
+          repository: VigilioYonatan/vigilio-deploy
           persist-credentials: false
 
       - name: Resolve digest from input or staging values.yaml
@@ -52,7 +53,7 @@ jobs:
         shell: bash
         env:
           EXPLICIT_DIGEST: ${{ inputs.image-digest }}
-          STAGING_VALUES: deploy/gitops/apps/bus-impl-v2/staging/values.yaml
+          STAGING_VALUES: gitops/apps/bus-impl-v2/staging/values.yaml
         run: |
           set -euo pipefail
           if [[ -n "${EXPLICIT_DIGEST}" ]]; then
@@ -85,11 +86,12 @@ jobs:
   promote:
     name: GitOps promote → production
     needs: [resolve-digest]
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       stage: production
       image-digest: ${{ needs.resolve-digest.outputs.image-digest }}
-      values-file: deploy/gitops/apps/bus-impl-v2/production/values.yaml
+      gitops-repository: VigilioYonatan/vigilio-deploy
+      values-file: gitops/apps/bus-impl-v2/production/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
       GITOPS_APP_PRIVATE_KEY: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
@@ -137,7 +139,7 @@ jobs:
           # Poll every 60 seconds for up to 30 minutes (30 attempts)
           for attempt in $(seq 1 30); do
             state="$(gh pr list \
-              --repo "${GITHUB_REPOSITORY}" \
+              --repo "VigilioYonatan/vigilio-deploy" \
               --head "${branch}" \
               --state all \
               --json state \

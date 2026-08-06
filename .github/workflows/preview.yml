@@ -30,7 +30,7 @@ permissions:
 jobs:
   helm-ci:
     name: Helm chart validation
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-helm-kubernetes-ci.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-helm-kubernetes-ci.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       chart-directory: deploy/helm/bus-impl-v2
       release-name: bus-impl-v2
