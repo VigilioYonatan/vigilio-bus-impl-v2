@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   application:
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@09b7466436709a6e5b97309b4f689adba4401ffb # v1
     with:
       has-cdk: false
       has-openapi: true
