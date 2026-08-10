@@ -57,7 +57,7 @@ jobs:
           MANUAL_ISSUE_KEYS: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_keys || '' }}
       - name: Create Jira Fix Version
         if: steps.issue_keys.outputs.issue_keys != ''
-        uses: VigilioYonatan/vigilio-platform-actions/actions/jira-devops@af9421ced67d9dcdcfb8f4968f51ad12e47d12f1 # v1
+        uses: VigilioYonatan/vigilio-platform-actions/actions/jira-devops@b3b1e4ecf15f7720915e0a20d6da4036ce01f30a # v1
         with:
           mode: release
           project-key: ${{ vars.JIRA_PROJECT_KEY }}
