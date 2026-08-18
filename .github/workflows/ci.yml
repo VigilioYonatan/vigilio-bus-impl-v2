@@ -31,6 +31,7 @@ jobs:
   application:
     uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@3d5136c01b7394457604480cd654ef32a04060a0 # v1
     with:
+      pnpm-version: '11.20.0'
       has-cdk: false
       has-openapi: true
       has-postgres: true
