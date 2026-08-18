@@ -1,19 +1,8 @@
 name: bus-impl-v2-deploy-staging
 
 on:
-  # Auto-deploy on every source push to main.
-  # Scoped to source paths so GitOps promotion PRs (values.yaml) don't
-  # trigger a new image build — that would create an infinite loop.
-  push:
-    branches: [main]
-    paths:
-      - 'src/**'
-      - 'drizzle/**'
-      - 'scripts/**'
-      - 'Dockerfile'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy-staging.yml'
+  # Staging deploy is triggered via workflow_dispatch.
+  # Re-enable push trigger once AWS OIDC and ECR secrets are provisioned in GitHub.
   workflow_dispatch:
     inputs:
       deploy-mode:
@@ -47,8 +36,7 @@ jobs:
       dockerfile: Dockerfile
       image-repository: ${{ vars.ECR_REPOSITORY_STAGING }}
       aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
-      # Push on source push to main or on explicit apply dispatch
-      push: ${{ github.event_name == 'push' || inputs.deploy-mode == 'apply' }}
+      push: ${{ inputs.deploy-mode == 'apply' }}
       platforms: linux/amd64,linux/arm64
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_BUILD_ROLE_ARN }}
@@ -62,7 +50,7 @@ jobs:
   promote:
     name: GitOps promote → staging
     needs: [container-build]
-    if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
+    if: inputs.deploy-mode == 'apply'
     uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
     with:
       stage: staging
@@ -82,7 +70,7 @@ jobs:
   enable-automerge:
     name: Enable auto-merge on promotion PR
     needs: [container-build, promote]
-    if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
+    if: inputs.deploy-mode == 'apply'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
