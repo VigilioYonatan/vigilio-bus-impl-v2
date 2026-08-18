@@ -21,8 +21,18 @@ const endpointUrl = new URL(endpoint);
 const host = endpointUrl.hostname;
 const port = Number(endpointUrl.port || 4566);
 const flociImage = process.env["FLOCI_IMAGE"] ?? "floci/floci:1.5.12";
-const containerName = process.env["FLOCI_CONTAINER_NAME"] ?? "bus-impl-floci-local";
+const containerName = process.env["FLOCI_CONTAINER_NAME"] ?? `${projectSlug()}-floci-local`;
 const autostart = process.env["FLOCI_AUTOSTART"] !== "false";
+
+function projectSlug(): string {
+  const raw = process.env["VIGILIO_PROJECT_SLUG"] ?? path.basename(projectRoot);
+  const slug = raw
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
+  if (!slug) throw new Error("Unable to infer VIGILIO_PROJECT_SLUG");
+  return slug.slice(0, 40);
+}
 
 await loadEnvFile(path.join(projectRoot, ".env"));
 

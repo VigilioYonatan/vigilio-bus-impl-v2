@@ -22,10 +22,10 @@ FROM node:24-alpine AS deps
 
 WORKDIR /app
 
-# Enable pnpm via corepack (pinned to match engines field in package.json)
-RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
+COPY package.json pnpm-lock.yaml .npmrc ./
 
-COPY package.json pnpm-lock.yaml ./
+# packageManager is the single source of truth for the pnpm version.
+RUN corepack enable && corepack prepare $(node -p "require('./package.json').packageManager") --activate
 
 # The private @vigilioyonatan/* packages live in GitHub Packages.
 # The build secret avoids persisting credentials in any layer.
@@ -39,11 +39,10 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
-
 # Reuse node_modules from the deps stage (avoid re-downloading)
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json tsconfig.json tsconfig.build.json ./
+RUN corepack enable && corepack prepare $(node -p "require('./package.json').packageManager") --activate
 COPY src ./src
 
 # tsc -p tsconfig.build.json && vigilio-node fix-esm-imports
@@ -56,9 +55,8 @@ FROM node:24-alpine AS prod-deps
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
-
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN corepack enable && corepack prepare $(node -p "require('./package.json').packageManager") --activate
 
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
     pnpm install --frozen-lockfile --prefer-offline --prod

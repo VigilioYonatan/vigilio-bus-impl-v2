@@ -1,3 +1,5 @@
+import { randomBytes } from "node:crypto";
+
 type JsonRecord = Record<string, unknown>;
 type RequestOptions = {
   readonly auth?: boolean;
@@ -11,7 +13,7 @@ const runId = new Date()
   .toISOString()
   .replaceAll(/[-:.TZ]/g, "")
   .slice(0, 14);
-const password = "SmokePassword2026!";
+const password = `Smoke-${randomBytes(24).toString("base64url")}!aA1`;
 
 const state = {
   access_token: "",
@@ -220,10 +222,15 @@ async function request(
   const expectedStatus = options.expectedStatus ?? 200;
 
   if (response.status !== expectedStatus) {
+    const requestId =
+      response.headers.get("x-request-id") ?? response.headers.get("x-amzn-requestid");
     throw new Error(
       [
         `${method} ${requestPath} returned ${response.status}, expected ${expectedStatus}.`,
-        `Response: ${text || "<empty>"}`,
+        text
+          ? `Response body omitted to protect tokens and PII (${text.length} characters).`
+          : "Response body was empty.",
+        ...(requestId ? [`Request ID: ${requestId}`] : []),
       ].join("\n"),
     );
   }

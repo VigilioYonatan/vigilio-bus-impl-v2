@@ -437,7 +437,7 @@
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health[0]",
+        "operationId": "HealthController_health",
         "parameters": [],
         "responses": {
           "200": {
@@ -459,7 +459,7 @@
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_health[1]",
+        "operationId": "HealthController_healthLive",
         "parameters": [],
         "responses": {
           "200": {
@@ -473,7 +473,7 @@
             }
           }
         },
-        "summary": "Verificar que el proceso esta vivo",
+        "summary": "Verificar que el proceso esta vivo (liveness)",
         "tags": [
           "health"
         ]
@@ -481,7 +481,7 @@
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_readiness[1]",
+        "operationId": "HealthController_readiness",
         "parameters": [],
         "responses": {
           "200": {
@@ -498,7 +498,7 @@
             "description": "PostgreSQL no esta disponible."
           }
         },
-        "summary": "Verificar que la API y PostgreSQL estan listos",
+        "summary": "Verificar que la API y PostgreSQL estan listos (readiness)",
         "tags": [
           "health"
         ]
@@ -506,7 +506,7 @@
     },
     "/health/startup": {
       "get": {
-        "operationId": "HealthController_health[2]",
+        "operationId": "HealthController_healthStartup",
         "parameters": [],
         "responses": {
           "200": {
@@ -520,7 +520,7 @@
             }
           }
         },
-        "summary": "Verificar que el proceso esta vivo",
+        "summary": "Verificar que el proceso ha iniciado (startup)",
         "tags": [
           "health"
         ]
@@ -1031,7 +1031,7 @@
     },
     "/ready": {
       "get": {
-        "operationId": "HealthController_readiness[0]",
+        "operationId": "HealthController_ready",
         "parameters": [],
         "responses": {
           "200": {

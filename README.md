@@ -131,3 +131,50 @@ schema versionado, handler idempotente, pruebas unitarias/integración, métrica
 
 La guía operativa detallada del pipeline está en
 [`../../docs/architecture/bus-impl-v2/CI-CD.md`](../../docs/architecture/bus-impl-v2/CI-CD.md).
+
+## Codebase Memory MCP (Senior Mode 2026)
+
+Grafo de conocimiento AST local y persistente para análisis de arquitectura, trazabilidad de impacto y consulta eficiente de tokens con IA.
+
+### Servidor de Interfaz Web 3D
+```powershell
+codebase-memory-mcp --ui=true --port=9749
+```
+Visualizador espacial interactivo WebGL: **http://localhost:9749**
+
+### Configuración de Auto-Indizado
+```powershell
+codebase-memory-mcp config set auto_index true
+```
+Mantiene el grafo AST sincronizado automáticamente en segundo plano cada vez que se modifican archivos.
+
+### Indización e Integración Multi-Proyecto (bus-impl-v2 + web-mfe)
+Para indizar y enlazar únicamente los proyectos `bus-impl-v2` (Backend) y `web-mfe` (Frontend):
+
+```powershell
+# 1. Indizar Backend
+codebase-memory-mcp cli index_repository --repo-path "C:\Users\Admin\Desktop\arquitectura-rimac-actualizado\apps\bus-impl-v2"
+
+# 2. Indizar Frontend
+codebase-memory-mcp cli index_repository --repo-path "C:\Users\Admin\Desktop\arquitectura-rimac-actualizado\apps\web-mfe"
+
+# 3. Enlazar Inteligencia Cross-Repo
+codebase-memory-mcp cli index_repository --repo-path "C:\Users\Admin\Desktop\arquitectura-rimac-actualizado\apps\web-mfe" --mode cross-repo-intelligence --target-projects '["C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"]'
+```
+
+### Práctica y Flujo Senior 2026 (12 Pasos)
+1. **Identificar proyecto**: `codebase-memory-mcp cli list_projects`
+2. **Validar estado**: `codebase-memory-mcp cli index_status --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"`
+3. **Explorar esquema**: `codebase-memory-mcp cli get_graph_schema --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"`
+4. **Gobernanza ADR**: `codebase-memory-mcp cli manage_adr` (Decisiones de arquitectura)
+5. **Mapear arquitectura**: `codebase-memory-mcp cli get_architecture --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"`
+6. **Localizar símbolos**: `codebase-memory-mcp cli search_graph --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2" --name-pattern ".*Product.*"`
+7. **Trazar impacto**: `codebase-memory-mcp cli trace_path --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2" --function-name "ProductController.index" --direction "outbound"`
+8. **Snippet AST exacto**: `codebase-memory-mcp cli get_code_snippet --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2" --qualified-name "<name>"`
+9. **Inspeccionar fuente**: Revisión puntual de decoradores NestJS (`@Injectable`, `@Controller`) e Inyección de Dependencias.
+10. **Detectar cambios Git**: `codebase-memory-mcp cli detect_changes --repo-path "."`
+11. **Ingestar trazas de prod**: `codebase-memory-mcp cli ingest_traces` (Correlacionar spans OpenTelemetry)
+12. **Verificar calidad**: `pnpm lint && pnpm typecheck && pnpm test`
+
+
+

@@ -28,6 +28,12 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@vigilioyonatan/*'
   - '@vigilio-services/*'
+  - '@aws-sdk/client-bedrock-runtime@3.1106.0'
+  - '@aws-sdk/client-sqs@3.1106.0'
+  - '@aws-sdk/s3-request-presigner@3.1106.0'
+  - '@aws-sdk/token-providers@3.1106.0'
+  - '@types/pg@8.21.0'
+  - fastify@5.11.3
 trustPolicy: no-downgrade
 trustLockfile: false
 onlyBuiltDependencies:

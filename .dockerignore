@@ -35,14 +35,8 @@ LICENSE
 dist
 
 # ── TypeScript source (compiled to dist)
-src
-
-# ── Scripts (dev / load-test / seed scripts)
-scripts
-
-# ── Tooling config (not needed at runtime)
-biome.json
-tsconfig*.json
+!src
+!tsconfig*.json
 vitest.config.*
 playwright.config.*
 commitlint.config.*
