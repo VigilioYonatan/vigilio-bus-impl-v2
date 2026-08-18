@@ -1,0 +1,42 @@
+name: bus-impl-v2-preview
+
+# Validates the Helm chart and Kubernetes manifests on every PR that touches
+# deploy/ or helm/ resources, before they reach main.
+#
+# Jobs:
+#   helm-ci  — helm lint, template render, kubeconform schema validation,
+#               Kyverno policy dry-run, and optional diff against the current
+#               release. Uses custom CRD schemas from deploy/schemas/ so
+#               Chaos Mesh CRDs are validated correctly.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deploy/helm/**'
+      - 'deploy/gitops/**'
+      - 'deploy/policies/**'
+      - 'deploy/observability/**'
+      - 'deploy/schemas/**'
+
+concurrency:
+  group: bus-impl-v2-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+  pull-requests: read
+
+jobs:
+  helm-ci:
+    name: Helm chart validation
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-helm-kubernetes-ci.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    with:
+      chart-directory: deploy/helm/bus-impl-v2
+      release-name: bus-impl-v2
+      namespace: bus-impl-v2
+      minimal-values: deploy/helm/bus-impl-v2/tests/values-minimal.yaml
+      production-values: deploy/helm/bus-impl-v2/tests/values-production.yaml
+      gitops-directory: deploy/gitops/apps/bus-impl-v2
+      custom-schema-directory: deploy/schemas
+    secrets: inherit

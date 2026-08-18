@@ -77,16 +77,19 @@ jobs:
         if: ${{ always() && hashFiles('trivy-fs.sarif') != '' }}
         with:
           sarif_file: trivy-fs.sarif
+          category: trivy-fs
       - name: Upload IaC SARIF
         uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
         if: ${{ always() && hashFiles('trivy-iac.sarif') != '' }}
         with:
           sarif_file: trivy-iac.sarif
+          category: trivy-iac
       - name: Upload Semgrep SARIF
         uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
         if: ${{ always() && hashFiles('semgrep.sarif') != '' }}
         with:
           sarif_file: semgrep.sarif
+          category: semgrep
       - name: Upload SBOM
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()

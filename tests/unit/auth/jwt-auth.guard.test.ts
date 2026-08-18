@@ -25,24 +25,22 @@ describe("JwtAuthGuard", () => {
     expect(tokenService.verify).not.toHaveBeenCalled();
   });
 
-  it.each([
-    undefined,
-    "Basic abc",
-    "Bearer",
-    "bearer token",
-  ])("rechaza authorization invalido: %s", async (authorization) => {
-    const reflector = {
-      getAllAndOverride: vi.fn().mockReturnValue(false),
-    } as unknown as Reflector;
-    const tokenService = { verify: vi.fn() } as unknown as AuthTokenService;
-    const guard = new JwtAuthGuard(reflector, tokenService);
-    const request = { headers: { authorization } } as AuthenticatedRequest;
+  it.each([undefined, "Basic abc", "Bearer", "bearer token"])(
+    "rechaza authorization invalido: %s",
+    async (authorization) => {
+      const reflector = {
+        getAllAndOverride: vi.fn().mockReturnValue(false),
+      } as unknown as Reflector;
+      const tokenService = { verify: vi.fn() } as unknown as AuthTokenService;
+      const guard = new JwtAuthGuard(reflector, tokenService);
+      const request = { headers: { authorization } } as AuthenticatedRequest;
 
-    await expect(guard.canActivate(executionContext(request))).rejects.toBeInstanceOf(
-      UnauthorizedException,
-    );
-    expect(tokenService.verify).not.toHaveBeenCalled();
-  });
+      await expect(guard.canActivate(executionContext(request))).rejects.toBeInstanceOf(
+        UnauthorizedException,
+      );
+      expect(tokenService.verify).not.toHaveBeenCalled();
+    },
+  );
 
   it("verifica access token y adjunta identidad confiable", async () => {
     const reflector = { getAllAndOverride: vi.fn().mockReturnValue(false) } as unknown as Reflector;

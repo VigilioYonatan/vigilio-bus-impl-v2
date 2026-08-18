@@ -47,3 +47,4 @@ export * from "./user/application/dtos/user-store.response.dto";
 export * from "./user/application/dtos/user-update.request.dto";
 export * from "./user/application/dtos/user-update.response.dto";
 export * from "./user/application/schemas/user.schema";
+export * from "./worker/application/schemas/worker-message.schema";

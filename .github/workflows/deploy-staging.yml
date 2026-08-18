@@ -1,0 +1,200 @@
+name: bus-impl-v2-deploy-staging
+
+on:
+  # Auto-deploy on every source push to main.
+  # Scoped to source paths so GitOps promotion PRs (values.yaml) don't
+  # trigger a new image build — that would create an infinite loop.
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'drizzle/**'
+      - 'scripts/**'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-staging.yml'
+  workflow_dispatch:
+    inputs:
+      deploy-mode:
+        description: 'apply = full deploy; plan = build only (dry run)'
+        required: false
+        default: apply
+        type: choice
+        options: [apply, plan]
+
+# Prevent concurrent deploys. Never cancel a running deployment.
+concurrency:
+  group: bus-impl-v2-deploy-staging
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: read
+  id-token: write      # delegated: OIDC for ECR auth and Cosign in shared-container-build-push
+  security-events: write  # delegated: Trivy container SARIF upload in shared-container-build-push
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 1: Build multi-arch OCI image, scan with Trivy, push to ECR, sign
+  #         with Cosign (GitHub OIDC keyless). SBOM + provenance generated
+  #         at build time by BuildKit (sbom: true, provenance: mode=max).
+  # ─────────────────────────────────────────────────────────────────────────
+  container-build:
+    name: Build, scan & push container
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    with:
+      dockerfile: Dockerfile
+      image-repository: ${{ vars.ECR_REPOSITORY_STAGING }}
+      aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      # Push on source push to main or on explicit apply dispatch
+      push: ${{ github.event_name == 'push' || inputs.deploy-mode == 'apply' }}
+      platforms: linux/amd64,linux/arm64
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_BUILD_ROLE_ARN }}
+      GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 2: Update gitops/…/staging/values.yaml with the new immutable
+  #         image digest and open a GitOps promotion PR (bot-owned).
+  #         ArgoCD picks it up after the PR auto-merges.
+  # ─────────────────────────────────────────────────────────────────────────
+  promote:
+    name: GitOps promote → staging
+    needs: [container-build]
+    if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    with:
+      stage: staging
+      image-digest: ${{ needs.container-build.outputs.image-digest }}
+      gitops-repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+      values-file: gitops/apps/bus-impl-v2/staging/values.yaml
+      gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
+    secrets:
+      GITOPS_APP_PRIVATE_KEY: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 3: Enable auto-merge on the promotion PR so it merges as soon as
+  #         the required CI gate passes. After merging, ArgoCD reconciles
+  #         the cluster and Argo Rollouts performs the canary strategy
+  #         (10 % → Prometheus analysis → 50 % → analysis → 100 %).
+  # ─────────────────────────────────────────────────────────────────────────
+  enable-automerge:
+    name: Enable auto-merge on promotion PR
+    needs: [container-build, promote]
+    if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          permission-pull-requests: write
+          permission-contents: write
+
+      - name: Enable auto-merge on GitOps promotion PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          IMAGE_DIGEST: ${{ needs.container-build.outputs.image-digest }}
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+        run: |
+          set -euo pipefail
+          # Reconstruct branch name from digest — matches shared-gitops-promote logic:
+          #   branch="gitops/promote-${STAGE}-${short_digest:0:12}"
+          short_digest="${IMAGE_DIGEST#sha256:}"
+          branch="gitops/promote-staging-${short_digest:0:12}"
+
+          pr_url="$(gh pr list \
+            --repo "${GITOPS_REPO}" \
+            --head "${branch}" \
+            --state open \
+            --json url \
+            --jq '.[0].url // empty')"
+
+          if [[ -n "${pr_url}" ]]; then
+            gh pr merge --auto --squash --delete-branch "${pr_url}"
+            echo "Auto-merge enabled on promotion PR: ${pr_url}"
+          else
+            echo "Promotion PR not found or already merged — digest may already be current."
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 4: Smoke tests — validates the deployed API endpoints are healthy.
+  #         Retries for up to 10 minutes to account for:
+  #           - Promotion PR CI (required status checks, ~8-12 min)
+  #           - Auto-merge processing
+  #           - ArgoCD sync + Argo Rollouts canary ramp-up
+  # ─────────────────────────────────────────────────────────────────────────
+  smoke:
+    name: Smoke tests (staging)
+    needs: [enable-automerge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: staging
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+        with:
+          github-packages-token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Wait for ArgoCD sync + run smoke tests with retry
+        shell: bash
+        env:
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          API_BASE_URL: ${{ vars.APP_BASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "${APP_BASE_URL}" || {
+            echo "::warning::APP_BASE_URL not configured for staging environment — skipping smoke"
+            exit 0
+          }
+          echo "Target: ${APP_BASE_URL}"
+          # Allow up to 20 attempts × 30s = 10 minutes for deployment to stabilise
+          for attempt in $(seq 1 20); do
+            echo "── Smoke attempt ${attempt}/20 ──"
+            if pnpm smoke:endpoints; then
+              echo "✓ Smoke passed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "✗ Attempt ${attempt} failed. Waiting 30s (ArgoCD sync / canary ramp)..."
+            sleep 30
+          done
+          echo "::error::Smoke tests failed after 20 attempts (10 minutes)"
+          exit 1
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 5: DAST — OWASP ZAP baseline scan against the live staging API.
+  #         Runs only if APP_BASE_URL is configured in the staging environment.
+  # ─────────────────────────────────────────────────────────────────────────
+  dast:
+    name: DAST — OWASP ZAP (staging)
+    needs: [smoke]
+    if: vars.APP_BASE_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@7c4deb10e6261301961c86d65d54a516394f9aed # v0.14.0
+        with:
+          target: ${{ vars.APP_BASE_URL }}
+          fail_action: true
+          artifact_name: bus-impl-v2-zap-staging-${{ github.run_id }}

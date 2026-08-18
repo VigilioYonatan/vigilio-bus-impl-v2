@@ -1,20 +1,32 @@
 import { type StdioOptions, spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import net from "node:net";
+import path from "node:path";
 
 type ContainerRuntime = "docker" | "podman";
 type RunOptions = { readonly allowFailure?: boolean; readonly stdio?: StdioOptions };
 type RunResult = { readonly exitCode: number };
 type TcpTarget = { readonly host: string; readonly port: number; readonly timeoutMs: number };
 
+const projectRoot = path.resolve(import.meta.dirname, "..");
 const endpoint = process.env["AWS_ENDPOINT_URL"] ?? "http://127.0.0.1:4566";
 const endpointUrl = new URL(endpoint);
 const host = endpointUrl.hostname;
 const port = Number(endpointUrl.port || 4566);
 const flociImage = process.env["FLOCI_IMAGE"] ?? "floci/floci:1.5.12";
-const containerName = process.env["FLOCI_CONTAINER_NAME"] ?? "bus-impl-floci-integration";
+const containerName = process.env["FLOCI_CONTAINER_NAME"] ?? `${projectSlug()}-floci-integration`;
 const autostart = process.env["FLOCI_AUTOSTART"] !== "false";
 const passthroughArgs = process.argv.slice(2);
+
+function projectSlug(): string {
+  const raw = process.env["VIGILIO_PROJECT_SLUG"] ?? path.basename(projectRoot);
+  const slug = raw
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
+  if (!slug) throw new Error("Unable to infer VIGILIO_PROJECT_SLUG");
+  return slug.slice(0, 40);
+}
 
 process.env["AWS_ENDPOINT_URL"] = endpoint;
 process.env["AWS_REGION"] ??= "us-east-1";

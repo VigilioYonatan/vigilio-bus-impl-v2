@@ -21,15 +21,37 @@ export class HealthController {
     private readonly service: HealthApplicationService,
   ) {}
 
-  @Get(["health", "health/live", "health/startup"])
+  @Get("health")
   @ApiOperation({ summary: "Verificar que el proceso esta vivo" })
   @ZodResponse({ status: 200, type: HealthResponseDocDto })
   health(): HealthResponseDto {
     return this.service.health();
   }
 
-  @Get(["ready", "health/ready"])
+  @Get("health/live")
+  @ApiOperation({ summary: "Verificar que el proceso esta vivo (liveness)" })
+  @ZodResponse({ status: 200, type: HealthResponseDocDto })
+  healthLive(): HealthResponseDto {
+    return this.service.health();
+  }
+
+  @Get("health/startup")
+  @ApiOperation({ summary: "Verificar que el proceso ha iniciado (startup)" })
+  @ZodResponse({ status: 200, type: HealthResponseDocDto })
+  healthStartup(): HealthResponseDto {
+    return this.service.health();
+  }
+
+  @Get("ready")
   @ApiOperation({ summary: "Verificar que la API y PostgreSQL estan listos" })
+  @ApiServiceUnavailableResponse({ description: "PostgreSQL no esta disponible." })
+  @ZodResponse({ status: 200, type: ReadinessResponseDocDto })
+  ready(): Promise<ReadinessResponseDto> {
+    return this.service.readiness();
+  }
+
+  @Get("health/ready")
+  @ApiOperation({ summary: "Verificar que la API y PostgreSQL estan listos (readiness)" })
   @ApiServiceUnavailableResponse({ description: "PostgreSQL no esta disponible." })
   @ZodResponse({ status: 200, type: ReadinessResponseDocDto })
   readiness(): Promise<ReadinessResponseDto> {

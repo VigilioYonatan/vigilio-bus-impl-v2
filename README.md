@@ -104,20 +104,24 @@ Los tres ambientes ejecutan el mismo digest OCI; nunca se recompila para promove
 5. `bus-impl-v2-verify-deployment` prueba el endpoint ya sincronizado. Un fallo requiere rollback
    al digest anterior, no reconstruir la imagen.
 
-Antes de activar un ambiente deben reemplazarse todos los `REPLACE_WITH_*` de `backend.hcl`, tfvars
-y GitOps. GitHub requiere las variables `AWS_REGION`, `BUS_IMPL_V2_ECR_REPOSITORY`,
-`AWS_CONTAINER_PUBLISH_ROLE_ARN`, `AWS_TERRAFORM_PLAN_ROLE_ARN`,
-`AWS_TERRAFORM_APPLY_ROLE_ARN`, `AWS_TERRAFORM_DRIFT_ROLE_ARN`,
-`AWS_RESILIENCE_DRILL_ROLE_ARN`, `BUS_IMPL_V2_STAGING_EKS_CLUSTER_NAME`,
-`BUS_IMPL_V2_STAGING_BROKER_TEST_PROXY_IP`, `BUS_IMPL_V2_STAGING_DATABASE_IP`,
-`GITOPS_APP_CLIENT_ID`, `GITOPS_BOT_ACTOR` y, por ambiente,
-`BUS_IMPL_V2_BASE_URL`. El secreto requerido es `GITOPS_APP_PRIVATE_KEY`; el token de GitHub
-Packages es opcional cuando `GITHUB_TOKEN` ya tiene lectura.
+Antes de activar un ambiente deben reemplazarse todos los `REPLACE_WITH_*` de `backend.hcl`, tfvars y GitOps.
 
-No se permiten access keys AWS en staging/production. RDS se resuelve por
-`DATABASE_SECRET_ARN`; la configuración sensible opcional usa Secrets Manager y la configuración
-general puede usar SSM. Las asociaciones Pod Identity de API, worker y migración deben existir
-antes de sincronizar el chart.
+### Variables y Secretos requeridos en GitHub (`Settings -> Secrets and variables -> Actions`):
+
+#### Variables del Repositorio (`vars`):
+- `ECR_REPOSITORY_STAGING`: URI del repositorio ECR privado para ambiente staging (ej. `123456789012.dkr.ecr.us-east-1.amazonaws.com/bus-impl-v2-staging`).
+- `ECR_REPOSITORY_DEVELOPMENT`: URI del repositorio ECR privado para ambiente desarrollo (ej. `123456789012.dkr.ecr.us-east-1.amazonaws.com/bus-impl-v2-dev`).
+- `AWS_REGION`: Región AWS (predeterminado: `us-east-1`).
+- `GITOPS_APP_CLIENT_ID`: App ID de la GitHub App encargada de abrir PRs de promoción en GitOps (`deploy/gitops/`).
+- `GITOPS_BOT_ACTOR`: Nombre del bot para GitOps (predeterminado: `github-actions[bot]`).
+- `APP_BASE_URL`: URL pública base de la API (configurada por Environment: `development`, `staging`, `production`) utilizada por smoke testing y OWASP ZAP DAST.
+
+#### Secretos del Repositorio (`secrets`):
+- `AWS_BUILD_ROLE_ARN`: ARN del rol IAM OIDC con permisos para autenticación ECR y push de imágenes container.
+- `GITOPS_APP_PRIVATE_KEY`: Llave privada RSA de la GitHub App para firmar y abrir los Pull Requests de promoción GitOps.
+- `GITHUB_PACKAGES_TOKEN`: (Opcional) Token de lectura para paquetes privados `@vigilioyonatan` en GitHub Packages.
+
+No se permiten access keys AWS en staging/production. RDS se resuelve por `DATABASE_SECRET_ARN`; la configuración sensible opcional usa Secrets Manager y la configuración general puede usar SSM. Las asociaciones Pod Identity de API, worker y migración deben existir antes de sincronizar el chart.
 
 ## Estado funcional honesto
 
@@ -127,3 +131,50 @@ schema versionado, handler idempotente, pruebas unitarias/integración, métrica
 
 La guía operativa detallada del pipeline está en
 [`../../docs/architecture/bus-impl-v2/CI-CD.md`](../../docs/architecture/bus-impl-v2/CI-CD.md).
+
+## Codebase Memory MCP (Senior Mode 2026)
+
+Grafo de conocimiento AST local y persistente para análisis de arquitectura, trazabilidad de impacto y consulta eficiente de tokens con IA.
+
+### Servidor de Interfaz Web 3D
+```powershell
+codebase-memory-mcp --ui=true --port=9749
+```
+Visualizador espacial interactivo WebGL: **http://localhost:9749**
+
+### Configuración de Auto-Indizado
+```powershell
+codebase-memory-mcp config set auto_index true
+```
+Mantiene el grafo AST sincronizado automáticamente en segundo plano cada vez que se modifican archivos.
+
+### Indización e Integración Multi-Proyecto (bus-impl-v2 + web-mfe)
+Para indizar y enlazar únicamente los proyectos `bus-impl-v2` (Backend) y `web-mfe` (Frontend):
+
+```powershell
+# 1. Indizar Backend
+codebase-memory-mcp cli index_repository --repo-path "C:\Users\Admin\Desktop\arquitectura-rimac-actualizado\apps\bus-impl-v2"
+
+# 2. Indizar Frontend
+codebase-memory-mcp cli index_repository --repo-path "C:\Users\Admin\Desktop\arquitectura-rimac-actualizado\apps\web-mfe"
+
+# 3. Enlazar Inteligencia Cross-Repo
+codebase-memory-mcp cli index_repository --repo-path "C:\Users\Admin\Desktop\arquitectura-rimac-actualizado\apps\web-mfe" --mode cross-repo-intelligence --target-projects '["C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"]'
+```
+
+### Práctica y Flujo Senior 2026 (12 Pasos)
+1. **Identificar proyecto**: `codebase-memory-mcp cli list_projects`
+2. **Validar estado**: `codebase-memory-mcp cli index_status --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"`
+3. **Explorar esquema**: `codebase-memory-mcp cli get_graph_schema --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"`
+4. **Gobernanza ADR**: `codebase-memory-mcp cli manage_adr` (Decisiones de arquitectura)
+5. **Mapear arquitectura**: `codebase-memory-mcp cli get_architecture --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2"`
+6. **Localizar símbolos**: `codebase-memory-mcp cli search_graph --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2" --name-pattern ".*Product.*"`
+7. **Trazar impacto**: `codebase-memory-mcp cli trace_path --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2" --function-name "ProductController.index" --direction "outbound"`
+8. **Snippet AST exacto**: `codebase-memory-mcp cli get_code_snippet --project "C-Users-Admin-Desktop-arquitectura-rimac-actualizado-apps-bus-impl-v2" --qualified-name "<name>"`
+9. **Inspeccionar fuente**: Revisión puntual de decoradores NestJS (`@Injectable`, `@Controller`) e Inyección de Dependencias.
+10. **Detectar cambios Git**: `codebase-memory-mcp cli detect_changes --repo-path "."`
+11. **Ingestar trazas de prod**: `codebase-memory-mcp cli ingest_traces` (Correlacionar spans OpenTelemetry)
+12. **Verificar calidad**: `pnpm lint && pnpm typecheck && pnpm test`
+
+
+

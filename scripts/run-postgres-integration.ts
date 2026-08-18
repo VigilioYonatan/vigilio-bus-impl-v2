@@ -4,11 +4,31 @@ import path from "node:path";
 const projectRoot = path.resolve(import.meta.dirname, "..");
 
 function localPostgresUrl(database: string): string {
-  const url = new URL("postgres://127.0.0.1:5432");
-  url.username = "postgres";
-  url.password = "postgres";
+  const host = process.env["E2E_POSTGRES_HOST"] ?? "127.0.0.1";
+  const port = positivePort(process.env["E2E_POSTGRES_PORT"] ?? "5432");
+  const url = new URL(`postgres://${host}:${port}`);
+  url.username = process.env["E2E_POSTGRES_USER"] ?? "postgres";
+  url.password = process.env["E2E_POSTGRES_PASSWORD"] ?? "postgres";
   url.pathname = database;
   return url.toString();
+}
+
+function projectDatabaseName(suffix: string): string {
+  const projectName = process.env["VIGILIO_PROJECT_SLUG"] ?? path.basename(projectRoot);
+  const slug = projectName
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "_")
+    .replaceAll(/^_+|_+$/g, "");
+  if (!slug) throw new Error("No se pudo inferir VIGILIO_PROJECT_SLUG");
+  return `${slug}${suffix}`.slice(0, 63);
+}
+
+function positivePort(value: string): number {
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new Error("E2E_POSTGRES_PORT debe ser un puerto valido");
+  }
+  return port;
 }
 
 function runNode(
@@ -31,8 +51,13 @@ function runNode(
   }
 }
 
-const databaseUrl = process.env["E2E_DATABASE_URL"] ?? localPostgresUrl("bus_impl_e2e");
+const defaultDatabaseName = process.env["E2E_DATABASE_NAME"] ?? projectDatabaseName("_e2e");
+const databaseUrl = process.env["E2E_DATABASE_URL"] ?? localPostgresUrl(defaultDatabaseName);
 const databaseName = new URL(databaseUrl).pathname.replace(/^\//, "");
+
+if (process.env["E2E_DATABASE_NAME"] && process.env["E2E_DATABASE_NAME"] !== databaseName) {
+  throw new Error("E2E_DATABASE_NAME y E2E_DATABASE_URL deben apuntar a la misma base");
+}
 
 if (!databaseName.endsWith("_e2e") && !databaseName.endsWith("_integration")) {
   throw new Error("E2E_DATABASE_URL debe apuntar a una base aislada *_e2e o *_integration");

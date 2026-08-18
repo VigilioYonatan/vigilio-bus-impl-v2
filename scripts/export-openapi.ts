@@ -2,11 +2,12 @@
 
 import "reflect-metadata";
 import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "../src/app.module.js";
 import { setupSwagger } from "../src/shared/infrastructure/docs/swagger.config.js";
 
-const outputPath = "docs/openapi/openapi.json";
+const outputPath = path.resolve(process.env["OPENAPI_OUTPUT_PATH"] ?? "docs/openapi/openapi.json");
 const app = await NestFactory.create(AppModule, {
   logger: false,
 });
@@ -20,7 +21,7 @@ try {
     ),
   };
 
-  mkdirSync("docs/openapi", { recursive: true });
+  mkdirSync(path.dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, `${JSON.stringify(normalized, null, 2)}\n`);
 
   const routeCount = Object.keys(normalized.paths).length;
