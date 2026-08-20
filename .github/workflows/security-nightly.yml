@@ -82,19 +82,19 @@ jobs:
           format: cyclonedx
           output: bus-impl-nightly-sbom.cdx.json
       - name: Upload filesystem SARIF
-        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         if: ${{ always() && hashFiles('trivy-fs.sarif') != '' }}
         with:
           sarif_file: trivy-fs.sarif
           category: trivy-fs
       - name: Upload IaC SARIF
-        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         if: ${{ always() && hashFiles('trivy-iac.sarif') != '' }}
         with:
           sarif_file: trivy-iac.sarif
           category: trivy-iac
       - name: Upload Semgrep SARIF
-        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         if: ${{ always() && hashFiles('semgrep.sarif') != '' }}
         with:
           sarif_file: semgrep.sarif
