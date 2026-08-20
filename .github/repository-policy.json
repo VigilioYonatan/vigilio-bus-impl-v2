@@ -6,11 +6,16 @@
     ".github/dependabot.yml",
     ".github/evidence-policy.json",
     ".github/governance-policy.json",
+    ".github/ISSUE_TEMPLATE/config.yml",
     ".github/pull_request_template.md",
     ".github/security-exceptions.json",
     ".github/workflows/ci.yml",
+    ".github/workflows/deploy-development.yml",
+    ".github/workflows/deploy-production.yml",
+    ".github/workflows/deploy-staging.yml",
     ".github/workflows/dora-metrics.yml",
     ".github/workflows/governance-audit.yml",
+    ".github/workflows/preview.yml",
     ".github/workflows/security-nightly.yml",
     "docs/security-vulnerability-management.md"
   ],
@@ -63,6 +68,10 @@
         "validate-security-exceptions",
         "validate-workflows"
       ]
+    },
+    {
+      "file": ".github/workflows/preview.yml",
+      "includes": ["shared-container-build-push.yml", "push: false", "platforms: linux/amd64"]
     },
     {
       "file": ".github/workflows/dora-metrics.yml",

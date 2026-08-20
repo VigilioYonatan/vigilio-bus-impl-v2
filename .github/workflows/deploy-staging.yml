@@ -9,11 +9,13 @@ on:
     paths:
       - 'src/**'
       - 'drizzle/**'
+      - 'packages/**'
       - 'scripts/**'
       - 'Dockerfile'
       - 'package.json'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy-staging.yml'
+      - 'pnpm-workspace.yaml'
+      - 'tsconfig*.json'
   workflow_dispatch:
     inputs:
       deploy-mode:
@@ -42,14 +44,14 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────
   container-build:
     name: Build, scan & push container
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
     with:
       dockerfile: Dockerfile
       image-repository: ${{ vars.ECR_REPOSITORY_STAGING }}
-      aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      aws-region: ${{ vars.AWS_REGION }}
       # Push on source push to main or on explicit apply dispatch
       push: ${{ github.event_name == 'push' || inputs.deploy-mode == 'apply' }}
-      platforms: linux/amd64,linux/arm64
+      platforms: ${{ (github.event_name == 'push' || inputs.deploy-mode == 'apply') && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_BUILD_ROLE_ARN }}
       GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
@@ -63,11 +65,11 @@ jobs:
     name: GitOps promote → staging
     needs: [container-build]
     if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
     with:
       stage: staging
       image-digest: ${{ needs.container-build.outputs.image-digest }}
-      gitops-repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+      gitops-repository: ${{ vars.GITOPS_REPOSITORY }}
       values-file: gitops/apps/bus-impl-v2/staging/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
@@ -88,11 +90,23 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Resolve GitOps repository scope
+        id: target
+        shell: bash
+        env:
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          [[ "${GITOPS_REPO}" =~ ^([A-Za-z0-9][A-Za-z0-9_.-]*)/([A-Za-z0-9][A-Za-z0-9_.-]*)$ ]]
+          echo "owner=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
+          echo "repository=${BASH_REMATCH[2]}" >> "${GITHUB_OUTPUT}"
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         id: app-token
         with:
           client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: ${{ steps.target.outputs.owner }}
+          repositories: ${{ steps.target.outputs.repository }}
           permission-pull-requests: write
           permission-contents: write
 
@@ -101,7 +115,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE_DIGEST: ${{ needs.container-build.outputs.image-digest }}
-          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
         run: |
           set -euo pipefail
           # Reconstruct branch name from digest — matches shared-gitops-promote logic:
@@ -144,7 +158,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
         with:
           github-packages-token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
           cache-dependency-path: pnpm-lock.yaml
@@ -157,8 +171,8 @@ jobs:
         run: |
           set -euo pipefail
           test -n "${APP_BASE_URL}" || {
-            echo "::warning::APP_BASE_URL not configured for staging environment — skipping smoke"
-            exit 0
+            echo "::error::APP_BASE_URL is required for staging smoke validation"
+            exit 1
           }
           echo "Target: ${APP_BASE_URL}"
           # Allow up to 20 attempts × 30s = 10 minutes for deployment to stabilise
@@ -181,20 +195,22 @@ jobs:
   dast:
     name: DAST — OWASP ZAP (staging)
     needs: [smoke]
-    if: vars.APP_BASE_URL != ''
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: staging
     permissions:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-        with:
-          persist-credentials: false
-
+      - name: Require DAST target
+        shell: bash
+        env:
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+        run: test -n "${APP_BASE_URL}" || { echo 'APP_BASE_URL is required for staging DAST'; exit 1; }
       - name: OWASP ZAP baseline scan
         uses: zaproxy/action-baseline@7c4deb10e6261301961c86d65d54a516394f9aed # v0.14.0
         with:
+          allow_issue_writing: false
           target: ${{ vars.APP_BASE_URL }}
           fail_action: true
           artifact_name: bus-impl-v2-zap-staging-${{ github.run_id }}

@@ -5,10 +5,7 @@ on:
     branches: [main]
   push:
     branches: [main]
-    # Skip expensive CI on pushes that only update GitOps manifests or docs.
-    # Those changes come from GitOps promotion PRs and don't need a full test run.
     paths-ignore:
-      - 'deploy/gitops/**'
       - '**.md'
       - 'docs/**'
   merge_group:
@@ -29,7 +26,7 @@ permissions:
 
 jobs:
   application:
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@3d5136c01b7394457604480cd654ef32a04060a0 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-backend-node-nest-ci.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
     with:
       pnpm-version: '11.20.0'
       has-cdk: false
@@ -43,4 +40,5 @@ jobs:
       e2e-script: ${{ github.event_name == 'pull_request' && 'test:e2e:critical' || 'test:e2e' }}
       attest-artifact: ${{ github.event_name == 'push' }}
       gitops-bot-actor: ${{ vars.GITOPS_BOT_ACTOR || 'github-actions[bot]' }}
-    secrets: inherit
+    secrets:
+      GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}

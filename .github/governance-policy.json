@@ -2,8 +2,8 @@
   "schema_version": 1,
   "default_branch": "main",
   "codeowners": {
-    "minimum_unique_owners": 2,
-    "require_team": true
+    "minimum_unique_owners": 1,
+    "require_team": false
   },
   "ruleset": {
     "name": "Vigilio Protect Default Branch",

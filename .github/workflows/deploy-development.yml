@@ -30,13 +30,13 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────
   container-build:
     name: Build, scan & push container (dev)
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
     with:
       dockerfile: Dockerfile
       image-repository: ${{ vars.ECR_REPOSITORY_DEVELOPMENT }}
-      aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      aws-region: ${{ vars.AWS_REGION }}
       push: ${{ inputs.deploy-mode == 'apply' }}
-      platforms: linux/amd64,linux/arm64
+      platforms: ${{ inputs.deploy-mode == 'apply' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_BUILD_ROLE_ARN }}
       GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
@@ -49,11 +49,11 @@ jobs:
     name: GitOps promote → development
     needs: [container-build]
     if: inputs.deploy-mode == 'apply'
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
     with:
       stage: development
       image-digest: ${{ needs.container-build.outputs.image-digest }}
-      gitops-repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+      gitops-repository: ${{ vars.GITOPS_REPOSITORY }}
       values-file: gitops/apps/bus-impl-v2/development/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
@@ -72,11 +72,23 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Resolve GitOps repository scope
+        id: target
+        shell: bash
+        env:
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          [[ "${GITOPS_REPO}" =~ ^([A-Za-z0-9][A-Za-z0-9_.-]*)/([A-Za-z0-9][A-Za-z0-9_.-]*)$ ]]
+          echo "owner=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
+          echo "repository=${BASH_REMATCH[2]}" >> "${GITHUB_OUTPUT}"
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         id: app-token
         with:
           client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: ${{ steps.target.outputs.owner }}
+          repositories: ${{ steps.target.outputs.repository }}
           permission-pull-requests: write
           permission-contents: write
 
@@ -85,7 +97,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE_DIGEST: ${{ needs.container-build.outputs.image-digest }}
-          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
         run: |
           set -euo pipefail
           short_digest="${IMAGE_DIGEST#sha256:}"
@@ -116,7 +128,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
         with:
           github-packages-token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
           cache-dependency-path: pnpm-lock.yaml
@@ -129,8 +141,8 @@ jobs:
         run: |
           set -euo pipefail
           test -n "${APP_BASE_URL}" || {
-            echo "::warning::APP_BASE_URL not configured for development environment — skipping smoke"
-            exit 0
+            echo "::error::APP_BASE_URL is required for development smoke validation"
+            exit 1
           }
           echo "Target: ${APP_BASE_URL}"
           for attempt in $(seq 1 20); do

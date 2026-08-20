@@ -18,7 +18,7 @@ on:
       image-digest:
         description: >
           Image digest to promote (sha256:…). Leave blank to use the digest
-          currently deployed in staging (deploy/gitops/apps/bus-impl-v2/staging/values.yaml).
+          currently deployed in staging (gitops/apps/bus-impl-v2/staging/values.yaml).
         required: false
         default: ''
 
@@ -43,10 +43,35 @@ jobs:
     outputs:
       image-digest: ${{ steps.resolve.outputs.digest }}
     steps:
+      - name: Require protected main
+        shell: bash
+        env:
+          SOURCE_REF: ${{ github.ref }}
+        run: test "${SOURCE_REF}" = 'refs/heads/main'
+      - name: Resolve GitOps repository scope
+        id: target
+        shell: bash
+        env:
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          [[ "${GITOPS_REPO}" =~ ^([A-Za-z0-9][A-Za-z0-9_.-]*)/([A-Za-z0-9][A-Za-z0-9_.-]*)$ ]]
+          echo "owner=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
+          echo "repository=${BASH_REMATCH[2]}" >> "${GITHUB_OUTPUT}"
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: ${{ steps.target.outputs.owner }}
+          repositories: ${{ steps.target.outputs.repository }}
+          permission-contents: read
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
-          repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+          repository: ${{ vars.GITOPS_REPOSITORY }}
+          ref: main
           persist-credentials: false
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Resolve digest from input or staging values.yaml
         id: resolve
@@ -86,11 +111,11 @@ jobs:
   promote:
     name: GitOps promote → production
     needs: [resolve-digest]
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@b317ad043cf701fcf84dd3f40b74181e15625fa7 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
     with:
       stage: production
       image-digest: ${{ needs.resolve-digest.outputs.image-digest }}
-      gitops-repository: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+      gitops-repository: ${{ vars.GITOPS_REPOSITORY }}
       values-file: gitops/apps/bus-impl-v2/production/values.yaml
       gitops-app-client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
     secrets:
@@ -117,11 +142,23 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Resolve GitOps repository scope
+        id: target
+        shell: bash
+        env:
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          [[ "${GITOPS_REPO}" =~ ^([A-Za-z0-9][A-Za-z0-9_.-]*)/([A-Za-z0-9][A-Za-z0-9_.-]*)$ ]]
+          echo "owner=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
+          echo "repository=${BASH_REMATCH[2]}" >> "${GITHUB_OUTPUT}"
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         id: app-token
         with:
           client-id: ${{ vars.GITOPS_APP_CLIENT_ID }}
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: ${{ steps.target.outputs.owner }}
+          repositories: ${{ steps.target.outputs.repository }}
           permission-pull-requests: read
 
       - name: Wait for production promotion PR to be merged
@@ -130,7 +167,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           IMAGE_DIGEST: ${{ needs.resolve-digest.outputs.image-digest }}
-          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY || 'VigilioYonatan/vigilio-deploy' }}
+          GITOPS_REPO: ${{ vars.GITOPS_REPOSITORY }}
         run: |
           set -euo pipefail
           short_digest="${IMAGE_DIGEST#sha256:}"
@@ -175,7 +212,7 @@ jobs:
           echo "Waiting 90s for ArgoCD to reconcile production..."
           sleep 90
 
-      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@f6cca7c221ec322ebdabd67f6be1ab2057953ae3 # v1
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
         with:
           github-packages-token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
           cache-dependency-path: pnpm-lock.yaml

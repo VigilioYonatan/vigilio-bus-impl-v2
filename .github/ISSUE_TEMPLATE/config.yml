@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security advisory
+    url: https://github.com/VigilioYonatan/vigilio-bus-impl-v2/security/advisories/new
+    about: Report sensitive vulnerabilities privately; never include credentials, PII, or customer data in an issue.

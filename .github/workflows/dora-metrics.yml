@@ -39,12 +39,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
-      - uses: VigilioYonatan/vigilio-platform-actions/actions/configure-github-packages@af9421ced67d9dcdcfb8f4968f51ad12e47d12f1 # v1
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/configure-github-packages@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
         with:
           token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
       - run: pnpm install --frozen-lockfile --prefer-offline
       - name: Collect production deployment metrics
-        run: pnpm devsecops:dora -- --window-days "${DORA_WINDOW_DAYS}"
+        run: pnpm devsecops:dora -- --environment production --window-days "${DORA_WINDOW_DAYS}"
         env:
           DORA_WINDOW_DAYS: ${{ inputs.window_days || '30' }}
           GITHUB_TOKEN: ${{ github.token }}
