@@ -44,7 +44,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────
   container-build:
     name: Build, scan & push container
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@2c9e23379ddcb1d7a1bf43edfa699a78a9ee5dc0 # v1
     with:
       dockerfile: Dockerfile
       image-repository: ${{ vars.ECR_REPOSITORY_STAGING }}
@@ -65,7 +65,7 @@ jobs:
     name: GitOps promote → staging
     needs: [container-build]
     if: github.event_name == 'push' || inputs.deploy-mode == 'apply'
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-gitops-promote.yml@2c9e23379ddcb1d7a1bf43edfa699a78a9ee5dc0 # v1
     with:
       stage: staging
       image-digest: ${{ needs.container-build.outputs.image-digest }}
@@ -158,7 +158,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
+      - uses: VigilioYonatan/vigilio-platform-actions/actions/setup-node-pnpm@2c9e23379ddcb1d7a1bf43edfa699a78a9ee5dc0 # v1
         with:
           github-packages-token: ${{ secrets.GITHUB_PACKAGES_TOKEN || github.token }}
           cache-dependency-path: pnpm-lock.yaml

@@ -29,7 +29,7 @@ permissions:
 jobs:
   container-preview:
     name: Build OCI preview without publishing
-    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@123aff150c7631f3fe054276343d03bbd6bd9eb0 # v1
+    uses: VigilioYonatan/vigilio-platform-actions/.github/workflows/shared-container-build-push.yml@2c9e23379ddcb1d7a1bf43edfa699a78a9ee5dc0 # v1
     with:
       dockerfile: Dockerfile
       image-repository: local/bus-impl-v2
