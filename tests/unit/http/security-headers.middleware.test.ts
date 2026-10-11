@@ -71,4 +71,71 @@ describe("securityHeadersMiddleware", () => {
 
     expect(response.removeHeader).toHaveBeenCalledWith("X-Powered-By");
   });
+
+  it("relaja la CSP solo para las rutas de docs declaradas", () => {
+    const { response, headers } = createResponse();
+
+    createSecurityHeadersMiddleware({
+      docsPaths: ["/docs", "/reference"],
+      enableHsts: false,
+    })({ path: "/reference" } as Request, response, vi.fn() as unknown as NextFunction);
+
+    const csp = headers.get("Content-Security-Policy") ?? "";
+    expect(csp).toContain("script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net");
+    expect(csp).toContain(
+      "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.scalar.com",
+    );
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("connect-src 'self'");
+  });
+
+  it("mantiene la CSP estricta en rutas de negocio aunque las docs esten habilitadas", () => {
+    const { response, headers } = createResponse();
+
+    createSecurityHeadersMiddleware({
+      docsPaths: ["/docs", "/reference"],
+      enableHsts: false,
+    })({ path: "/products" } as Request, response, vi.fn() as unknown as NextFunction);
+
+    const csp = headers.get("Content-Security-Policy") ?? "";
+    expect(csp).toContain("default-src 'none'");
+    expect(csp).not.toContain("cdn.jsdelivr.net");
+  });
+
+  it("cubre subrutas de docs pero no prefijos parecidos", () => {
+    const middleware = createSecurityHeadersMiddleware({
+      docsPaths: ["/docs"],
+      enableHsts: false,
+    });
+
+    const docsAsset = createResponse();
+    middleware(
+      { path: "/docs/swagger-ui.css" } as Request,
+      docsAsset.response,
+      vi.fn() as unknown as NextFunction,
+    );
+    expect(docsAsset.headers.get("Content-Security-Policy")).toContain("cdn.jsdelivr.net");
+
+    const lookalike = createResponse();
+    middleware(
+      { path: "/docs-not-really" } as Request,
+      lookalike.response,
+      vi.fn() as unknown as NextFunction,
+    );
+    expect(lookalike.headers.get("Content-Security-Policy")).not.toContain("cdn.jsdelivr.net");
+  });
+
+  it("no relaja nada cuando las docs estan deshabilitadas", () => {
+    const { response, headers } = createResponse();
+
+    createSecurityHeadersMiddleware({ enableHsts: false })(
+      { path: "/reference" } as Request,
+      response,
+      vi.fn() as unknown as NextFunction,
+    );
+
+    const csp = headers.get("Content-Security-Policy") ?? "";
+    expect(csp).toContain("default-src 'none'");
+    expect(csp).not.toContain("cdn.jsdelivr.net");
+  });
 });
