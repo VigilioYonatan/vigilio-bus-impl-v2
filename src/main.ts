@@ -45,8 +45,13 @@ async function bootstrap() {
 
   app.use(correlationIdMiddleware);
   app.use(metricsMiddleware);
+
+  // Las paginas de docs interactivas (Swagger/Scalar) necesitan una CSP mas
+  // laxa que la API JSON; se habilita solo cuando las docs estan encendidas.
+  const docsEnabled = environment.API_DOCS_ENABLED ?? environment.APP_STAGE !== "production";
   app.use(
     createSecurityHeadersMiddleware({
+      docsPaths: docsEnabled ? ["/docs", "/reference"] : [],
       enableHsts: environment.APP_STAGE !== "local",
     }),
   );
@@ -63,7 +68,6 @@ async function bootstrap() {
   });
   app.enableShutdownHooks();
 
-  const docsEnabled = environment.API_DOCS_ENABLED ?? environment.APP_STAGE !== "production";
   if (docsEnabled) {
     setupSwagger(app);
   }

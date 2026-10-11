@@ -30,6 +30,18 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["src/contracts.ts"],
+      "assist": {
+        "actions": {
+          "source": {
+            "organizeImports": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "parser": {
       "unsafeParameterDecoratorsEnabled": true
